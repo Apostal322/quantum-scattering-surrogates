@@ -109,18 +109,27 @@ def peak_position(T_func: Callable[[np.ndarray], np.ndarray], z: complex) -> tup
     return float(opt.x), float(-opt.fun)
 
 
-def half_max_width(T_func: Callable[[np.ndarray], np.ndarray], e_peak: float, T_peak: float, G: float) -> float | None:
+def half_max_width(
+    T_func: Callable[[np.ndarray], np.ndarray],
+    e_peak: float,
+    T_peak: float,
+    G: float,
+    E_range: tuple[float, float],
+) -> float | None:
     """Full width at half maximum of the peak at e_peak (Brent roots of T - T_peak/2).
 
-    Returns None when T does not fall below T_peak/2 within 10 Gamma on both sides (a broad
-    resonance on a high background), where an FWHM is not defined.
+    The search stays within 10 Gamma of the peak and inside E_range (energies outside the scan,
+    in particular E <= 0, are never evaluated). Returns None when T does not fall below T_peak/2
+    there on both sides (e.g. a broad resonance on a high background): FWHM undefined.
     """
     def f(e: float) -> float:
         return float(T_func(np.array([e]))[0]) - 0.5 * T_peak
 
     edges = []
     for side in (-1, 1):
-        far = e_peak + side * 10 * G
+        far = float(np.clip(e_peak + side * 10 * G, *E_range))
+        if far == e_peak:
+            return None
         if f(far) >= 0:
             return None
         lo, hi = sorted((e_peak, far))
@@ -156,8 +165,9 @@ def scan_metrics(scan: Scan, t_hat: np.ndarray, T_func_hat, T_func_fom) -> dict[
         e_hat, T_pk = peak_position(T_func_hat, z)
         w = (scan.E > z.real - 2 * G) & (scan.E < z.real + 2 * G)
         found = bool(w.any() and np.max(np.abs(Th[w] - T[w])) <= 0.1 * T_ref)
-        W_ref = half_max_width(T_func_fom, e_ref, T_ref, G)
-        W_hat = half_max_width(T_func_hat, e_hat, T_pk, G) if W_ref is not None else None
+        rng = (float(scan.E[0]), float(scan.E[-1]))
+        W_ref = half_max_width(T_func_fom, e_ref, T_ref, G, rng)
+        W_hat = half_max_width(T_func_hat, e_hat, T_pk, G, rng) if W_ref is not None else None
         out["resonances"].append(
             {
                 "E_pole": z.real,
