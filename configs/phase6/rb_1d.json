@@ -1,0 +1,10 @@
+{
+  "name": "rb_1d",
+  "description": "Stage B symmetric double barrier (V0=10, a=0.8, d=2.5); parameter E only.",
+  "barrier_width": 0.8, "well_width": 2.5, "V0": 10.0, "h": 0.0025,
+  "E_range": [0.1, 10.0],
+  "n_candidates": 4000,
+  "budgets": [4, 6, 8, 10, 12, 15, 20, 30],
+  "random_seeds": [100, 101, 102],
+  "scan_uniform": 20001, "scan_window": 2001
+}

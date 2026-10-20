@@ -1,0 +1,13 @@
+{
+  "name": "rb_3d",
+  "description": "Double barrier (a=0.8, d=2.5) with parameters (E, VL, VR) in [0.1,10] x [6,14] x [6,14].",
+  "barrier_width": 0.8, "well_width": 2.5, "h": 0.0025,
+  "lo": [0.1, 6.0, 6.0], "hi": [10.0, 14.0, 14.0], "E_range": [0.1, 10.0],
+  "n_candidates": 2048, "seed_candidates": 1,
+  "n_test": 2048, "seed_test": 2,
+  "n_scans": 6, "seed_scans": 3, "scan_uniform": 5001, "scan_window": 801,
+  "seed_sobol_design": 10,
+  "budgets": [8, 12, 16, 20, 24, 27, 32, 40, 64],
+  "random_seeds": [100, 101, 102],
+  "n_effectivity": 256, "effectivity_budgets": [12, 16, 20, 24]
+}
