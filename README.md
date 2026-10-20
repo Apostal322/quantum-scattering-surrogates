@@ -426,6 +426,18 @@ docs/                          coursework report, English report, supervisor and
 | [`results/reproduction_check.md`](results/reproduction_check.md) | latest recomputation of the headline numbers |
 | [`CHANGELOG.md`](CHANGELOG.md) | project history, including corrected conclusions |
 
+**Phase 6 (research branch `research/phase6-external-validation`, not merged; under review).** The planned external CO2–He
+multi-fidelity benchmark was blocked because its data could not be retrieved. It was replaced by a projection-based
+reduced-basis experiment on the project's own validated physics.
+
+| document | content |
+|---|---|
+| [`docs/PHASE6_RESULTS_RU.md`](docs/PHASE6_RESULTS_RU.md) | Phase 6 results and recommendation (Russian) |
+| [`docs/PHASE6_LITERATURE_REVIEW.md`](docs/PHASE6_LITERATURE_REVIEW.md) · [RU](docs/PHASE6_LITERATURE_REVIEW_RU.md) | verified literature review, with the verification level for each source |
+| [`docs/PHASE6_DATA_AUDIT.md`](docs/PHASE6_DATA_AUDIT.md) | why the external dataset could not be used |
+| [`docs/PHASE6_NOVELTY_ASSESSMENT.md`](docs/PHASE6_NOVELTY_ASSESSMENT.md) | established vs. reproduced vs. new, and what still needs verification |
+| [`results/phase6/SUMMARY.md`](results/phase6/SUMMARY.md) | generated tables (`scripts/phase6/analyze.py`) |
+
 ### Skills demonstrated
 
 **Numerical simulation (Python, NumPy, SciPy).**
