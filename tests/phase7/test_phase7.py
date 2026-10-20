@@ -128,3 +128,47 @@ def test_generalization_runner_end_to_end_on_a_small_config():
     assert d["rbf_kernel"] in d["rbf_kernel_validation"]
     e = d["effectivity"][0]
     assert e["random"]["certified_bound_holds_psi"] == 1.0
+
+
+def _gen_coarse():
+    gen = json.loads((REPO / "configs" / "phase7" / "generalization.json").read_text())
+    gen.update(h=0.0125, n_scans_test=1)
+    return gen
+
+
+def test_slice1d_runner_on_a_small_config():
+    from qscatter.phase7.slice1d import aaa_adaptive_design, run_slice1d
+
+    g = gaussian_fom(S, S, D, 5.4125, 0.0125)
+    t_of = lambda E: g.amplitudes(_mu(E, 10.0, 10.0))[0]  # noqa: E731
+    E, _ = aaa_adaptive_design(t_of, np.linspace(0.1, 10, 128), 12)
+    assert len(np.unique(E)) == 12  # no energy is sampled twice
+    d = run_slice1d({"splits": _gen_coarse(), "n_energy_candidates": 128, "budgets": [24],
+                     "scan": {"n_uniform": 401, "n_window": 21}})
+    row = d["scans"][0]["rows"][0]
+    assert row["rb_greedy"]["max_abs_dt"] < 1e-3 and all(e["matched"] for e in row["rb_greedy"]["pole_errors"])
+
+
+def test_basis_study_counts_resonances_and_basis_size():
+    from qscatter.phase7.basis import study
+
+    cfg = json.loads((REPO / "configs" / "phase7" / "basis.json").read_text())
+    cfg.update(h=0.0125, n_candidates=128, n_validation=50, n_dense=200, n_max=20)
+    r = study(0.6, 4.0, 10.0, 5.0, cfg)
+    assert r["n_resonances"] == 2
+    assert r["n_for_accuracy"]["0.0001"] is not None and r["n_for_accuracy"]["0.0001"] <= 20
+    assert np.all(np.diff(r["singular_values"]) <= 1e-12)
+
+
+def test_robustness_runner_on_a_small_config():
+    from qscatter.phase7.robustness import run_robustness
+
+    cfg = json.loads((REPO / "configs" / "phase7" / "robustness.json").read_text())
+    cfg.update(splits=_gen_coarse(), n_lines=1, n_energy_candidates=128, budget=16, seeds=[1], noise_levels=[1e-8],
+               coarse_meshes=[0.025], jitter=[0.3], scan={"n_uniform": 401, "n_window": 21})
+    cfg["triple"] = dict(cfg["triple"], middle_heights=[16.0], budgets=[16])
+    d = run_robustness(cfg)
+    line = d["lines"][0]
+    assert line["precision"]["complex64"] > line["precision"]["complex128"]
+    assert {"aaa_uniform", "aaa_adaptive", "pchip_uniform", "rb_greedy_noisy_snapshots"} <= set(line["noise"][0])
+    assert d["doublets"]["configs"][0]["adjacent_pairs"]

@@ -1,0 +1,8 @@
+{
+  "name": "slice1d",
+  "description": "Experiment C (1-D part): PCHIP, AAA (uniform / adaptive) and greedy RB along fixed-height test scans, equal FOM query counts.",
+  "splits_config": "generalization.json",
+  "n_energy_candidates": 2048,
+  "budgets": [8, 12, 16, 24, 32, 48, 64],
+  "scan": {"n_uniform": 4001, "n_window": 401}
+}
