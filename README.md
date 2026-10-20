@@ -305,7 +305,7 @@ Python 3.11 and 3.12.
 
 ```bash
 python -m qscatter.quickstart      # ~30 s; also available as the command `qscatter-quickstart`
-python -m pytest -q                # 57 tests
+python -m pytest -q                # 70 tests
 ```
 
 The quickstart:
