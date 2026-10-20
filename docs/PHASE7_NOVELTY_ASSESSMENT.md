@@ -1,7 +1,5 @@
 # Phase 7 novelty assessment
 
-> **Draft status:** the 3D rows (generalisation, MLP, transfer, certified bound) are checked against `results/phase7/generalization/` once that run finishes.
-
 **Bottom line.** Phase 7 makes **no discovery and introduces no new method**. Each method it uses
 is published, and each qualitative finding is either known or expected from known theory. What
 Phase 7 adds is coursework-level work: an independently validated benchmark on a smooth potential,
@@ -90,15 +88,16 @@ read**. Items marked [snippet] rest on search snippets only. The Phase 6 review
 | Finding (see `PHASE7_RESULTS.md`) | Status | Why |
 |---|---|---|
 | FEM converges O(h²) to an independent ODE solution; resonances are mesh-, domain- and grid-stable poles | **Standard** (verification, not research) | textbook FEM theory |
-| Greedy Galerkin/LSPG RB reaches the FEM floor in 3D (E, V_L, V_R) with tens of snapshots and beats POD regression, RBF and an MLP at equal queries | **Known** | Maldonado et al. 2025; Giri et al. 2026; general RB literature. We confirm it on a different potential family |
-| Along one energy line, adaptively sampled AAA is about as accurate as greedy RB at equal queries | **Expected / known** | with exact transparent BCs the operator is polynomial in k, so Galerkin RB on a line is itself a rational function of k. Rational interpolation and moment matching are known to be closely related (MRI, Loewner). Not surprising |
+| Galerkin RB reaches max abs Δt ≈ 1e-9 in 3D (E, V_L, V_R) with 48 snapshots, while POD regression, RBF and an MLP (up to 4096 points) stay at ≈ 1 and resolve no held-out resonance | **Known** | Maldonado et al. 2025; Giri et al. 2026; general RB literature. We confirm it on a different potential family |
+| Along one energy line, RB reaches the floor with 16 queries, adaptive AAA with 24 and uniform AAA with about 48 (same order) | **Expected / known** | with exact transparent BCs the operator is polynomial in k, so Galerkin RB on a line is itself a rational function of k. Rational interpolation and moment matching are known to be closely related (MRI, Loewner). Not surprising |
 | Direct interpolation of t generalises poorly across heights while RB does not | **Known in kind** | consistent with the pole-matching difficulties of Nobile & Pradovera 2021 and with MOR folklore |
 | Basis size tracks the resonance count (≈ 1.5–3 per resonance at fixed widths) much more than resonance width (Γ_min × 160 smaller → ≤ 1 extra function at 1e-4) | **Expected; mild confirmation** | consistent with Phase 6 E4, and with n-width / meromorphic-structure arguments; we found no paper with this exact deconfounded sweep |
 | The attainable RB accuracy in double precision scales as ≈ 5e-11 / Γ_min across 19 geometries | **Expected** | forward error ≈ eps × condition number, with σ_min ∝ Γ near a resonance. A useful quantitative illustration, not a new result |
 | Certified bound res/σ_min holds on every point and is loose near resonances | **Known** | Sen et al. 2006; SCM literature. Our σ_min is computed exactly at full order, so the bound is an a-posteriori certificate, **not** an online-efficient certified RB bound |
 | Power-iteration ‖A⁻¹‖ is only a lower estimate | **Standard** | elementary numerical linear algebra |
-| A rectangular-barrier basis transfers to Gaussians only after enrichment | **Not established as new; one test** | an empirical observation for one pair of families |
-| Noise sensitivity of AAA (Froissart doublets, spurious poles) | **Known** | AAA literature, Bruno–Santana–Trefethen |
+| A rectangular-barrier basis (48 snapshots, no Gaussian data) reaches the FEM discretisation error on Gaussians, at about twice the native basis size; 8 Gaussian snapshots take it to 1.5e-7 | **Not established as new; one test** | an empirical observation for one pair of families sharing one mesh |
+| Greedy sampling is not uniformly better than a Sobol design in 3D (similar max error; better resonance recall at small n) | **Consistent with Phase 6** | Phase 6 found the same; no claim |
+| Noise sensitivity of AAA on uniform grids (Froissart doublets, spurious poles); adaptive AAA is more noise-tolerant than RB with noisy snapshots | **Known in kind** | AAA literature, Bruno–Santana–Trefethen |
 | Near-degenerate doublets resolved by RB and adaptive AAA | **Expected** | both represent poles; no claim |
 
 ## 3. What can be claimed (coursework level)
