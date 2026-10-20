@@ -28,6 +28,7 @@ def test_fom_converges_at_second_order_to_the_exact_solver_with_the_same_phase()
     for h in (0.02, 0.01):
         t, r = FOM(lay, h).amplitudes(_mu3(E))
         errs.append(np.max(np.abs(t - exact.t)))  # complex: magnitude and global phase
+        assert np.max(np.abs(r - exact.r)) < 2 * errs[-1] + 1e-12  # reflection, same convention
         assert np.max(np.abs(np.abs(t) ** 2 + np.abs(r) ** 2 - 1)) < 1e-10  # flux conserved
     assert 3.5 < errs[0] / errs[1] < 4.5  # O(h^2)
 
@@ -104,3 +105,13 @@ def test_pod_regression_and_direct_interpolation_reproduce_training_values(fom3:
     t, _ = fom3.observables(mu, S[0], S[-1])
     np.testing.assert_allclose(bl.pod_regression(fom3, mu, S, mu, lo, hi), t, atol=1e-8)
     np.testing.assert_allclose(bl.direct_rbf(mu, t, mu, lo, hi), t, atol=1e-8)
+
+
+def test_amplitudes_without_residual_return_the_same_amplitudes(fom3: FOM):
+    rm = ReducedModel(fom3, orthonormalize(fom3.solve(_mu3(np.linspace(0.5, 9.5, 5))).T)[0])
+    mu = _mu3(np.array([1.2, 6.3]))
+    t1, r1, res1 = rm.amplitudes(mu)
+    t2, r2, res2 = rm.amplitudes(mu, residual=False)
+    np.testing.assert_array_equal(t1, t2)
+    np.testing.assert_array_equal(r1, r2)
+    assert np.all(np.isfinite(res1)) and np.all(np.isnan(res2))

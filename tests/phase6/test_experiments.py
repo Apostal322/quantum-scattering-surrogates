@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from qscatter.phase6 import experiments as ex
 from qscatter.phase6.fom import FOM, double_barrier_layers
@@ -47,3 +48,29 @@ def test_configs_keep_train_candidate_and_test_sources_separate():
 def test_provenance_records_config_commit_and_dirty_flag():
     p = ex.provenance({"x": 1})
     assert p["config"] == {"x": 1} and "git_commit" in p and "code_modified_since_commit" in p
+
+
+def test_half_max_width_matches_a_lorentzian_and_handles_undefined_widths():
+    E0, G = 2.0, 0.01
+
+    def lor(e):
+        return 1.0 / (1.0 + ((np.asarray(e) - E0) / (G / 2)) ** 2)
+
+    assert ex.half_max_width(lor, E0, 1.0, G) == pytest.approx(G, rel=1e-9)
+
+    def flat(e):  # peak on a background that never drops to half maximum
+        return 0.8 + 0.2 * lor(e)
+
+    assert ex.half_max_width(flat, E0, 1.0, G) is None
+
+
+def test_spurious_peak_count_ignores_true_resonances_and_flags_extra_peaks():
+    E = np.linspace(0.0, 4.0, 4001)
+    pole = 1.0 - 0.005j  # Gamma = 0.01
+
+    def bump(c, w):
+        return np.exp(-(((E - c) / w) ** 2))
+
+    T_true = bump(1.0, 0.01)
+    assert ex.spurious_peaks(E, T_true, [pole]) == 0
+    assert ex.spurious_peaks(E, T_true + 0.3 * bump(3.0, 0.05), [pole]) == 1

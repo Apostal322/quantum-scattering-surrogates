@@ -104,9 +104,12 @@ class ReducedModel:
         return out
 
     def amplitudes(
-        self, mu: np.ndarray, method: Method = "galerkin", chunk: int = 512
+        self, mu: np.ndarray, method: Method = "galerkin", chunk: int = 512, residual: bool = True
     ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """(t, r, relative residual ||res||/||b||) for each parameter point, in chunks."""
+        """(t, r, relative residual ||res||/||b||) for each parameter point, in chunks.
+
+        residual=False skips the residual (NaN is returned): the online cost of a plain query.
+        """
         mu = np.atleast_2d(mu)
         ts, rs, ress = [], [], []
         for i in range(0, mu.shape[0], chunk):
@@ -115,7 +118,8 @@ class ReducedModel:
             t, r = self.fom.observables(m, c @ self.end0, c @ self.endL)
             ts.append(t)
             rs.append(r)
-            ress.append(self.residual_norm(m, c) / (2 * np.sqrt(m[:, 0])))  # ||b|| = 2k
+            ress.append(self.residual_norm(m, c) / (2 * np.sqrt(m[:, 0])) if residual  # ||b|| = 2k
+                        else np.full(m.shape[0], np.nan))
         return np.concatenate(ts), np.concatenate(rs), np.concatenate(ress)
 
     def wavefunctions(self, mu: np.ndarray, method: Method = "galerkin") -> np.ndarray:

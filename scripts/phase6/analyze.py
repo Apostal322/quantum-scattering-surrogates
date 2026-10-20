@@ -8,7 +8,6 @@ exact S-matrix solver for the cost table.
 """
 import json
 import sys
-import time
 from pathlib import Path
 
 import numpy as np
@@ -19,7 +18,6 @@ sys.path.insert(0, str(REPO))
 from qscatter.phase6 import baselines as bl  # noqa: E402
 from qscatter.phase6.fom import FOM, double_barrier_layers  # noqa: E402
 from qscatter.phase6.rb import ReducedModel, orthonormalize  # noqa: E402
-from qscatter.physics.smatrix import compute_scattering  # noqa: E402
 from qscatter.plotting import INK, INK2, NEUTRAL, SLOTS, plt, setup  # noqa: E402
 
 RES = REPO / "results" / "phase6"
@@ -46,6 +44,29 @@ def random_designs(d, n):
 def metric(rows, method, key):
     vals = [r[method][key] for r in rows if method in r]
     return float(np.median(vals)) if vals else None
+
+
+# ------------------------------------------------------------- resonances
+
+
+def table_resonances(d, cases):
+    """Per-method resonance metrics for (n, design) cases; None-safe."""
+    out = ["| N, design | method | resolved | max peak shift / Γ | max FWHM rel. error | FWHM missing* | spurious peaks |",
+           "|---|---|---|---|---|---|---|"]
+    for n, design, methods in cases:
+        rs = rows_by(d, design, n)
+        if not rs:
+            continue
+        for m in methods:
+            if m not in rs[0]:
+                continue
+            x = rs[0][m]
+            out.append(f"| {n}, {design} | {m} | {x['resonances_resolved']} | {e(x['max_peak_shift_over_gamma'])} | "
+                       f"{e(x.get('max_fwhm_rel_error'))} | {x.get('fwhm_undefined_or_missing', '–')} | {x.get('spurious_peaks_total', '–')} |")
+    out.append("\n*Resonances whose FWHM is undefined in the FOM (the peak does not fall to half maximum within "
+               "±10Γ, e.g. broad resonances on a high background) or missing in the surrogate. Peak shift and FWHM "
+               "error are relative to the FOM (the FOM itself has max |Δt| ≈ 4e-4 against the exact solver).")
+    return "\n".join(out)
 
 
 # ---------------------------------------------------------------------- 1D
@@ -93,6 +114,7 @@ def fig_1d(d):
     ax.set(xlabel="number of high-fidelity (FOM) solves", ylabel="max |T̂ − T_FOM| on resonance-resolved scan",
            title="Stage B, parameter E: projection vs data-driven surrogates", ylim=(1e-10, 10))
     ax.legend(fontsize=7.5, frameon=False, loc="upper right")
+    ax.text(ns[0], 6.0, "values > 5 (interpolant blow-up) drawn at 5", fontsize=7, color=INK2, va="bottom")
     fig.savefig(FIG / "p6_1d_error_vs_budget.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
@@ -101,7 +123,7 @@ def fig_1d(d):
 
 
 def table_3d(d):
-    out = ["| N | RB-Galerkin greedy: test max\\|Δt\\| / scan max\\|ΔT\\| / resonances | RB-Galerkin Sobol | RB-Galerkin random (median) | RB-Galerkin tensor | RB-LSPG greedy | RBF on t, best design | POD regression, best design |",
+    out = ["| N | RB-Galerkin greedy: test max\\|Δt\\| / scan max\\|ΔT\\| / resonances | RB-Galerkin Sobol | RB-Galerkin random (median) | RB-Galerkin tensor | RB-LSPG greedy | RBF on t, best design† | POD regression, best design† |",
            "|---|---|---|---|---|---|---|---|"]
     for n in sorted({r["n"] for r in d["rows"]}):
         def trip(rs, m):
@@ -134,11 +156,13 @@ def fig_3d(d):
                     xs.append(n)
                     ys.append(max(metric(rs, "rb_galerkin", key), 1e-12))
             ax.semilogy(xs, ys, ls=ls or "none", marker="o", ms=4, color=c, label=f"RB-Galerkin, {label}")
-        for m, c, label in [("rbf_t", SLOTS[1], "RBF on t (best design)"), ("pod_regression", SLOTS[4], "POD regression (best design)")]:
+        for m, c, label in [("rbf_t", SLOTS[1], "RBF on t (best design†)"), ("pod_regression", SLOTS[4], "POD regression (best design†)")]:
             ys = [min(r[m][key] for r in d["rows"] if r["n"] == n) for n in ns]
             ax.semilogy(ns, ys, ls="-.", marker="^", ms=4, color=c, label=label)
         ax.set(xlabel="number of FOM solves", title=title)
-    axs[0].set_ylabel("max error")
+    axs[0].set_ylabel("max |t̂ − t_FOM| (left) / max |T̂ − T_FOM| (right)")
+    fig.text(0.5, -0.04, "† best of the 6 sampling designs, chosen on the test data: optimistic for the baseline",
+             ha="center", fontsize=8, color=INK2)
     axs[0].legend(fontsize=7, frameon=False)
     fig.suptitle("Double barrier with parameters (E, V_L, V_R): error vs high-fidelity budget", fontsize=11, y=1.03)
     fig.savefig(FIG / "p6_3d_error_vs_budget.png", dpi=150, bbox_inches="tight")
@@ -237,26 +261,9 @@ def fig_nwidth(d):
 # ------------------------------------------------------------------- costs
 
 
-def table_cost(d1, d3):
-    E = np.linspace(0.1, 10, 100000)
-    pot = double_barrier_layers().potential({"VL": 10.0, "VR": 12.0})
-    t0 = time.perf_counter()
-    compute_scattering(E, pot)
-    exact = (time.perf_counter() - t0) / E.size
-    rows = ["| quantity | value |", "|---|---|"]
-    rows.append(f"| FOM solve (P1 FEM, {d3['fom']['nodes']} nodes, banded LU) | {d3['fom']['seconds_per_solve']*1e6:.0f} µs |")
-    rows.append(f"| exact S-matrix solver (vectorised, per energy) | {exact*1e6:.2f} µs |")
-    for n in (16, 32, 64):
-        r = rows_by(d3, "greedy", n)
-        if r:
-            rows.append(f"| RB-Galerkin online, n = {n} (per point, batched) | {r[0]['rb_galerkin']['seconds_per_test_point']*1e6:.1f} µs |")
-            rows.append(f"| RB offline assembly, n = {n} | {r[0]['_basis']['rb_offline_seconds']*1e3:.0f} ms |")
-    g = d3["greedy"]
-    rows.append(f"| 3D greedy to n = {len(g['selected'])}: indicator sweeps / FOM solves / total | "
-                f"{g['seconds_indicator']:.1f} s / {g['seconds_fom']:.2f} s / {g['seconds_total']:.1f} s |")
-    if d1:
-        rows.append(f"| 1D greedy to n = {len(d1['greedy']['selected_E'])}: total | {d1['greedy']['seconds_total']:.1f} s |")
-    return "\n".join(rows), exact
+def table_cost():
+    p = RES / "cost" / "cost.md"
+    return p.read_text().split("\n", 2)[2] if p.exists() else "Run scripts/phase6/benchmark_cost.py first."
 
 
 def main():
@@ -270,18 +277,22 @@ def main():
                   f"FOM: {d1['fom']['nodes']} nodes; FOM vs exact S-matrix on the scan: max |Δt| = {e(d1['fom']['max_abs_dt'])}, "
                   f"RMSE(T) = {e(d1['fom']['rmse_T'])}. Test: {d1['test_points']} resonance-resolved energies "
                   "(never used for training or selection). Cells: max |T̂ − T_FOM| and resonances resolved.\n",
-                  table_1d(d1), ""]
+                  table_1d(d1), "", "### Resonance metrics (1D)\n",
+                  table_resonances(d1, [(n, dz, ["rb_galerkin", "aaa_t", "pchip_t", "pod_regression"])
+                                        for n in (10, 15, 20) for dz in ("greedy", "aaa_greedy", "uniform")]), ""]
     if d3:
         fig_3d(d3)
         fig_effectivity(d3)
         ex = fig_example_scan(d3)
         parts += ["## 3D: parameters (E, V_L, V_R)\n", "Cells: max |Δt| on 2048 held-out random points / max |ΔT| on 6 "
                   "resonance-resolved scans (held-out heights), and resonances resolved on the scans.\n",
-                  table_3d(d3), "", "### Residual indicator vs true error\n", table_effectivity(d3), "",
+                  table_3d(d3), "\n† best of the 6 sampling designs, chosen on the test data (optimistic for the baseline).\n",
+                  "### Resonance metrics (3D, 6 held-out scans)\n",
+                  table_resonances(d3, [(n, "greedy", ["rb_galerkin", "rb_lspg", "rbf_t", "pod_regression"]) for n in (12, 16, 24)]),
+                  "", "### Residual indicator vs true error\n", table_effectivity(d3), "",
                   f"Example (figure p6_example_resonance): narrowest resonance Γ = {ex['gamma']:.1e}; max |ΔT| with the same 16 "
                   f"FOM solves: RB {e(ex['max_dT_rb'])}, RBF {e(ex['max_dT_rbf'])}, POD regression {e(ex['max_dT_pod'])}.\n"]
-        cost, _ = table_cost(d1, d3)
-        parts += ["## Cost\n", cost, ""]
+        parts += ["## Cost (scripts/phase6/benchmark_cost.py)\n", table_cost(), ""]
     if dn:
         fig_nwidth(dn)
         parts += ["## What sets the basis size (snapshot singular values)\n", table_nwidth(dn), ""]

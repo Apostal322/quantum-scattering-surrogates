@@ -24,7 +24,8 @@ from typing import Any, Callable
 
 import numpy as np
 import scipy
-from scipy.optimize import minimize_scalar
+from scipy.optimize import brentq, minimize_scalar
+from scipy.signal import find_peaks
 from scipy.stats import qmc, spearmanr
 
 from qscatter.phase6 import baselines as bl
@@ -108,12 +109,43 @@ def peak_position(T_func: Callable[[np.ndarray], np.ndarray], z: complex) -> tup
     return float(opt.x), float(-opt.fun)
 
 
+def half_max_width(T_func: Callable[[np.ndarray], np.ndarray], e_peak: float, T_peak: float, G: float) -> float | None:
+    """Full width at half maximum of the peak at e_peak (Brent roots of T - T_peak/2).
+
+    Returns None when T does not fall below T_peak/2 within 10 Gamma on both sides (a broad
+    resonance on a high background), where an FWHM is not defined.
+    """
+    def f(e: float) -> float:
+        return float(T_func(np.array([e]))[0]) - 0.5 * T_peak
+
+    edges = []
+    for side in (-1, 1):
+        far = e_peak + side * 10 * G
+        if f(far) >= 0:
+            return None
+        lo, hi = sorted((e_peak, far))
+        edges.append(brentq(f, lo, hi, xtol=1e-12 * max(1.0, e_peak)))
+    return float(edges[1] - edges[0])
+
+
+def spurious_peaks(E: np.ndarray, T: np.ndarray, poles: list[complex]) -> int:
+    """Peaks of T with prominence > 0.05 farther than 3 Gamma from every exact pole."""
+    idx, _ = find_peaks(T, prominence=0.05)
+    count = 0
+    for i in idx:
+        if all(abs(E[i] - z.real) > 3 * (-2 * z.imag) for z in poles):
+            count += 1
+    return count
+
+
 def scan_metrics(scan: Scan, t_hat: np.ndarray, T_func_hat, T_func_fom) -> dict[str, Any]:
     T, Th = np.abs(scan.t_fom) ** 2, np.abs(t_hat) ** 2
     out: dict[str, Any] = {
         "rmse_T": l2_rmse(scan.E, Th - T),
         "max_abs_dT": float(np.max(np.abs(Th - T))),
         "max_abs_dt": float(np.max(np.abs(t_hat - scan.t_fom))),
+        "spurious_peaks": spurious_peaks(scan.E, Th, scan.poles),
+        "spurious_peaks_fom": spurious_peaks(scan.E, T, scan.poles),
         "resonances": [],
     }
     for z in scan.poles:
@@ -124,6 +156,8 @@ def scan_metrics(scan: Scan, t_hat: np.ndarray, T_func_hat, T_func_fom) -> dict[
         e_hat, T_pk = peak_position(T_func_hat, z)
         w = (scan.E > z.real - 2 * G) & (scan.E < z.real + 2 * G)
         found = bool(w.any() and np.max(np.abs(Th[w] - T[w])) <= 0.1 * T_ref)
+        W_ref = half_max_width(T_func_fom, e_ref, T_ref, G)
+        W_hat = half_max_width(T_func_hat, e_hat, T_pk, G) if W_ref is not None else None
         out["resonances"].append(
             {
                 "E_pole": z.real,
@@ -131,6 +165,9 @@ def scan_metrics(scan: Scan, t_hat: np.ndarray, T_func_hat, T_func_fom) -> dict[
                 "T_peak_fom": T_ref,
                 "peak_shift_over_gamma": abs(e_hat - e_ref) / G,
                 "peak_height_error": abs(T_pk - T_ref),
+                "fwhm_fom": W_ref,
+                "fwhm_rel_error": (abs(W_hat - W_ref) / W_ref) if (W_ref and W_hat) else None,
+                "fwhm_missing": W_ref is not None and W_hat is None,
                 "resolved": found,
             }
         )
@@ -200,6 +237,10 @@ def evaluate_methods(
         res["scan_max_abs_dT"] = float(max(s["max_abs_dT"] for s in sc))
         res["resonances_resolved"] = f"{sum(r['resolved'] for r in reson)}/{len(reson)}"
         res["max_peak_shift_over_gamma"] = float(max(r["peak_shift_over_gamma"] for r in reson)) if reson else None
+        widths = [r["fwhm_rel_error"] for r in reson if r["fwhm_rel_error"] is not None]
+        res["max_fwhm_rel_error"] = float(max(widths)) if widths else None
+        res["fwhm_undefined_or_missing"] = sum(r["fwhm_rel_error"] is None for r in reson)
+        res["spurious_peaks_total"] = int(sum(s["spurious_peaks"] for s in sc))
         out[name] = res
     out["_basis"] = {"r": int(V.shape[1]), "rb_offline_seconds": rm.offline_seconds,
                      "singular_values": (sv / sv[0]).tolist()}
