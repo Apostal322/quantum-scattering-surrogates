@@ -109,8 +109,8 @@ def fig_1d(d):
                 ys.append(min(max(rs[0][m]["scan_max_abs_dT"], 1e-12), 5.0))  # >1 = blow-up, clipped
         ax.semilogy(xs, ys, ls=ls, marker=mk, color=c, label=label, ms=4)
     ax.axhline(d["fom"]["max_abs_dt"], color=NEUTRAL, lw=0.8, ls=":")
-    ax.text(ns[-1], d["fom"]["max_abs_dt"] * 1.4, "FOM discretisation error (max |Δt| vs exact S-matrix)",
-            ha="right", fontsize=8, color=INK2)
+    ax.text(ns[0], d["fom"]["max_abs_dt"] * 0.45, "FOM discretisation error (max |Δt| vs exact S-matrix)",
+            ha="left", va="top", fontsize=8, color=INK2)
     ax.set(xlabel="number of high-fidelity (FOM) solves", ylabel="max |T̂ − T_FOM| on resonance-resolved scan",
            title="Stage B, parameter E: projection vs data-driven surrogates", ylim=(1e-10, 10))
     ax.legend(fontsize=7.5, frameon=False, loc="upper right")

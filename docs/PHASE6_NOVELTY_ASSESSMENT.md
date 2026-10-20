@@ -65,7 +65,10 @@ reproduction of any specific published number.
    **24** FOM solves, for any sampling design (greedy, Sobol, random). Residual greedy helps only at
    intermediate budgets (n = 16: 1.1e-5 vs 8.7e-5 for Sobol). A 4×4×4 tensor grid is worse (9e-4 at
    64 solves). Thin-plate RBF on t and POD coefficient regression on the same solves stay at errors
-   of order 1 up to 64 solves.
+   of order 1 up to 64 solves. Resonance metrics on the 6 held-out scans: with 12 greedy solves
+   Galerkin resolves 18/18 resonances (peak shift ≤ 0.005Γ, FWHM error ≤ 0.5 %, no spurious peaks);
+   RBF and POD regression resolve 0/18 even at 24 solves. The "best design" shown for RBF/POD is
+   chosen on test data, which is optimistic for them.
 3. **Residual as an error indicator** (256 held-out points): the Spearman correlation with the true
    wave-function error is 0.84–0.99, and with |Δt| 0.66–0.82. The bound ‖A⁻¹‖‖res‖ ≥ ‖Δψ‖ holds on
    100 % of points but overestimates by a median 440–1100× (up to 7e4×). ‖A⁻¹‖ (median 485, max 1.6e4)
@@ -76,8 +79,9 @@ reproduction of any specific published number.
    11 → 18). In the well-width sweep the number of resonances and the well's phase count d·Δk/π grow
    together, so the experiment cannot tell which of the two sets the rank.
 5. **Negative results:** POD coefficient regression is unusable for this resonant problem at every
-   budget; LSPG is less accurate than Galerkin at small bases in 1D; the comparison with the exact
-   S-matrix solver is unfavourable for any surrogate (Section G).
+   budget; LSPG is less accurate than Galerkin at small bases (1D, and in 3D at n = 12 it resolves
+   10/18 held-out resonances against 18/18 for Galerkin); the vectorised exact S-matrix solver is
+   faster than any surrogate (Section G).
 
 ## F. Potential contributions not established as globally novel
 
@@ -98,10 +102,13 @@ reproduction of any specific published number.
 
 ## G. Claims that need independent verification (or must not be made)
 
-- **No runtime acceleration of a real coupled-channel solver is claimed.** For piecewise-constant 1D
-  potentials, the exact transfer/S-matrix solver costs about a microsecond per energy (vectorised),
-  far cheaper than both the FEM FOM and RB online evaluation (Cost table in SUMMARY.md). RB is
-  only faster than *our FEM FOM*. Any speed-up statement depends on that baseline.
+- **No runtime acceleration of a real coupled-channel solver is claimed.** Measured
+  (`results/phase6/cost/cost.md`, n = 24, one thread, spread up to 1.5× between runs):
+  - RB costs 14 µs per batched query and 64 µs per single query; the FEM FOM costs 373 µs per solve.
+    Against the FOM, RB breaks even after ~170 queries (~4400 if the greedy is counted).
+  - The vectorised exact S-matrix solver costs 0.7 µs per energy, which RB never beats.
+  - Called one energy at a time, the exact solver costs 164 µs because of Python overhead. RB
+    "beats" it after ~540 queries; that is an interpreter effect, not an algorithmic one.
 - RB here is **intrusive**: it needs the discretised operator and wave functions. AAA and RBF need
   only t from a black box. The FOM-solve budget comparison does not price that difference.
 - Results are for one family of 1D double barriers. Generalisation to coupled channels, Coulomb

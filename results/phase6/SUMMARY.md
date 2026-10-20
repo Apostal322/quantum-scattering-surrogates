@@ -15,11 +15,54 @@ FOM: 1641 nodes; FOM vs exact S-matrix on the scan: max |Δt| = 3.9e-04, RMSE(T)
 | 20 | 5.5e-09 3/3 | 5.5e-09 3/3 | 1.6e-08 | 5.5e-09 3/3 | 5.5e-09 3/3 | 7.4e-05 3/3 | 1.0e+00 0/3 | 1.0e+00 0/3 |
 | 30 | 5.4e-09 3/3 | 5.6e-09 3/3 | 5.4e-09 | 5.6e-09 3/3 | 5.7e-09 3/3 | 5.6e-08 3/3 | 1.0e+00 0/3 | 1.0e+00 0/3 |
 
+### Resonance metrics (1D)
+
+| N, design | method | resolved | max peak shift / Γ | max FWHM rel. error | FWHM missing* | spurious peaks |
+|---|---|---|---|---|---|---|
+| 10, greedy | rb_galerkin | 3/3 | 2.6e-07 | 4.9e-09 | 0 | 0 |
+| 10, greedy | aaa_t | 2/3 | 1.2e-02 | 6.9e-01 | 0 | 0 |
+| 10, greedy | pchip_t | 0/3 | 3.1e-01 | 1.1e+01 | 2 | 0 |
+| 10, greedy | pod_regression | 0/3 | 3.0e+00 | – | 3 | 2 |
+| 10, aaa_greedy | rb_galerkin | 3/3 | 1.2e-05 | 8.1e-07 | 0 | 0 |
+| 10, aaa_greedy | aaa_t | 1/3 | 1.0e+00 | 2.1e+00 | 0 | 0 |
+| 10, aaa_greedy | pchip_t | 0/3 | 3.0e+00 | – | 3 | 0 |
+| 10, aaa_greedy | pod_regression | 0/3 | 3.0e+00 | 2.2e+00 | 2 | 2 |
+| 10, uniform | rb_galerkin | 3/3 | 2.7e-07 | 3.2e-08 | 0 | 0 |
+| 10, uniform | aaa_t | 1/3 | 3.0e+00 | 5.0e-01 | 1 | 0 |
+| 10, uniform | pchip_t | 0/3 | 3.0e+00 | 1.5e+00 | 2 | 0 |
+| 10, uniform | pod_regression | 0/3 | 3.0e+00 | 7.7e-01 | 2 | 0 |
+| 15, greedy | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 15, greedy | aaa_t | 3/3 | 5.9e-05 | 6.8e-05 | 0 | 0 |
+| 15, greedy | pchip_t | 0/3 | 3.2e-01 | 6.7e+00 | 2 | 0 |
+| 15, greedy | pod_regression | 0/3 | 2.6e+00 | 7.7e+00 | 2 | 2 |
+| 15, aaa_greedy | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 15, aaa_greedy | aaa_t | 3/3 | 2.2e-06 | 8.2e-05 | 0 | 0 |
+| 15, aaa_greedy | pchip_t | 0/3 | 4.7e-01 | 1.6e+00 | 2 | 0 |
+| 15, aaa_greedy | pod_regression | 0/3 | 3.0e+00 | – | 3 | 5 |
+| 15, uniform | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 15, uniform | aaa_t | 3/3 | 3.4e-03 | 1.3e-02 | 0 | 0 |
+| 15, uniform | pchip_t | 0/3 | 3.0e+00 | 2.5e-01 | 2 | 0 |
+| 15, uniform | pod_regression | 0/3 | 3.0e+00 | 3.4e-01 | 2 | 0 |
+| 20, greedy | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 20, greedy | aaa_t | 3/3 | 2.5e-07 | 1.5e-08 | 0 | 0 |
+| 20, greedy | pchip_t | 0/3 | 3.2e-01 | 6.7e+00 | 2 | 0 |
+| 20, greedy | pod_regression | 0/3 | 3.0e+00 | 7.5e+00 | 2 | 3 |
+| 20, aaa_greedy | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 20, aaa_greedy | aaa_t | 3/3 | 2.6e-07 | 1.8e-09 | 0 | 0 |
+| 20, aaa_greedy | pchip_t | 0/3 | 4.7e-01 | 8.1e-01 | 2 | 0 |
+| 20, aaa_greedy | pod_regression | 0/3 | 3.0e+00 | – | 3 | 6 |
+| 20, uniform | rb_galerkin | 3/3 | 2.6e-07 | 2.0e-09 | 0 | 0 |
+| 20, uniform | aaa_t | 3/3 | 5.2e-06 | 3.6e-05 | 0 | 0 |
+| 20, uniform | pchip_t | 0/3 | 3.0e+00 | 3.3e+00 | 1 | 0 |
+| 20, uniform | pod_regression | 0/3 | 3.0e+00 | 3.7e+00 | 1 | 0 |
+
+*Resonances whose FWHM is undefined in the FOM (the peak does not fall to half maximum within ±10Γ, e.g. broad resonances on a high background) or missing in the surrogate. Peak shift and FWHM error are relative to the FOM (the FOM itself has max |Δt| ≈ 4e-4 against the exact solver).
+
 ## 3D: parameters (E, V_L, V_R)
 
 Cells: max |Δt| on 2048 held-out random points / max |ΔT| on 6 resonance-resolved scans (held-out heights), and resonances resolved on the scans.
 
-| N | RB-Galerkin greedy: test max\|Δt\| / scan max\|ΔT\| / resonances | RB-Galerkin Sobol | RB-Galerkin random (median) | RB-Galerkin tensor | RB-LSPG greedy | RBF on t, best design | POD regression, best design |
+| N | RB-Galerkin greedy: test max\|Δt\| / scan max\|ΔT\| / resonances | RB-Galerkin Sobol | RB-Galerkin random (median) | RB-Galerkin tensor | RB-LSPG greedy | RBF on t, best design† | POD regression, best design† |
 |---|---|---|---|---|---|---|---|
 | 8 | 8.7e-01 / 9.7e-01 12/18 | 3.4e-01 / 1.2e-01 12/18 | 9.2e-01 / 9.4e-01 | 1.4e+00 / 1.0e+00 0/18 | 8.8e-01 / 9.7e-01 0/18 | 1.2e+00 / 9.5e-01 (greedy) | 1.4e+00 / 9.6e-01 (random_s100) |
 | 12 | 2.7e-03 / 3.7e-03 18/18 | 3.4e-03 / 4.4e-03 18/18 | 7.0e-03 / 5.2e-03 | – | 7.5e-01 / 8.3e-01 10/18 | 1.1e+00 / 9.2e-01 (random_s101) | 1.5e+00 / 9.2e-01 (random_s101) |
@@ -30,6 +73,27 @@ Cells: max |Δt| on 2048 held-out random points / max |ΔT| on 6 resonance-resol
 | 32 | 2.3e-09 / 6.9e-09 18/18 | 2.4e-09 / 7.0e-09 18/18 | 2.4e-09 / 6.9e-09 | – | 2.3e-09 / 6.9e-09 18/18 | 1.1e+00 / 9.5e-01 (random_s101) | 1.1e+00 / 9.1e-01 (greedy) |
 | 40 | 2.4e-09 / 7.0e-09 18/18 | 2.2e-09 / 7.2e-09 18/18 | 2.3e-09 / 7.0e-09 | – | 2.4e-09 / 7.0e-09 18/18 | 1.0e+00 / 9.4e-01 (random_s101) | 1.1e+00 / 9.1e-01 (greedy) |
 | 64 | 2.3e-09 / 7.0e-09 18/18 | 2.4e-09 / 6.8e-09 18/18 | 2.3e-09 / 7.0e-09 | 9.3e-04 / 7.1e-04 18/18 | 2.3e-09 / 7.0e-09 18/18 | 1.1e+00 / 9.6e-01 (random_s101) | 1.1e+00 / 8.9e-01 (greedy) |
+
+† best of the 6 sampling designs, chosen on the test data (optimistic for the baseline).
+
+### Resonance metrics (3D, 6 held-out scans)
+
+| N, design | method | resolved | max peak shift / Γ | max FWHM rel. error | FWHM missing* | spurious peaks |
+|---|---|---|---|---|---|---|
+| 12, greedy | rb_galerkin | 18/18 | 4.5e-03 | 5.0e-03 | 0 | 0 |
+| 12, greedy | rb_lspg | 10/18 | 2.1e+00 | 8.8e+00 | 1 | 0 |
+| 12, greedy | rbf_t | 0/18 | 3.1e+00 | – | 18 | 1 |
+| 12, greedy | pod_regression | 0/18 | 3.1e+00 | 1.1e+01 | 17 | 2 |
+| 16, greedy | rb_galerkin | 18/18 | 4.5e-06 | 5.5e-06 | 0 | 0 |
+| 16, greedy | rb_lspg | 18/18 | 2.1e-03 | 1.4e-02 | 0 | 0 |
+| 16, greedy | rbf_t | 0/18 | 3.1e+00 | 7.3e+00 | 16 | 1 |
+| 16, greedy | pod_regression | 0/18 | 3.0e+00 | 1.2e+01 | 16 | 0 |
+| 24, greedy | rb_galerkin | 18/18 | 3.5e-07 | 1.9e-09 | 0 | 0 |
+| 24, greedy | rb_lspg | 18/18 | 3.5e-07 | 9.3e-09 | 0 | 0 |
+| 24, greedy | rbf_t | 0/18 | 3.1e+00 | 7.0e+00 | 16 | 2 |
+| 24, greedy | pod_regression | 0/18 | 3.1e+00 | 1.4e+01 | 13 | 1 |
+
+*Resonances whose FWHM is undefined in the FOM (the peak does not fall to half maximum within ±10Γ, e.g. broad resonances on a high background) or missing in the surrogate. Peak shift and FWHM error are relative to the FOM (the FOM itself has max |Δt| ≈ 4e-4 against the exact solver).
 
 ### Residual indicator vs true error
 
@@ -44,20 +108,31 @@ Cells: max |Δt| on 2048 held-out random points / max |ΔT| on 6 resonance-resol
 
 Example (figure p6_example_resonance): narrowest resonance Γ = 5.0e-03; max |ΔT| with the same 16 FOM solves: RB 2.1e-06, RBF 7.8e-01, POD regression 7.6e-01.
 
-## Cost
+## Cost (scripts/phase6/benchmark_cost.py)
 
-| quantity | value |
+Intel(R) Xeon(R) Processor @ 2.10GHz; Linux-6.18.44-fc-v139-x86_64-with-glibc2.39; Python 3.13.16, NumPy 2.5.3, SciPy 1.18.1; OMP_NUM_THREADS=1. FOM 1641 nodes; RB from 24 greedy FOM solves, basis size 24. Medians of 9 repetitions. On the shared cloud VM used for the reported numbers, repeated runs differed by up to ~1.5x; compare orders of magnitude, not the last digit.
+
+| stage | time |
 |---|---|
-| FOM solve (P1 FEM, 1641 nodes, banded LU) | 299 µs |
-| exact S-matrix solver (vectorised, per energy) | 0.85 µs |
-| RB-Galerkin online, n = 16 (per point, batched) | 27.9 µs |
-| RB offline assembly, n = 16 | 19 ms |
-| RB-Galerkin online, n = 32 (per point, batched) | 104.3 µs |
-| RB offline assembly, n = 32 | 52 ms |
-| RB-Galerkin online, n = 64 (per point, batched) | 100.4 µs |
-| RB offline assembly, n = 64 | 52 ms |
-| 3D greedy to n = 64: indicator sweeps / FOM solves / total | 8.7 s / 0.04 s / 11.4 s |
-| 1D greedy to n = 30: total | 1.6 s |
+| FOM solve, single query | 372.9 µs |
+| exact S-matrix solver, single query | 164.1 µs |
+| exact S-matrix solver, batched (per energy) | 0.7 µs |
+| offline: 24 snapshots | 3.6 ms |
+| offline: SVD basis | 1.7 ms |
+| offline: reduced operators + residual QR | 48.2 ms |
+| offline: residual greedy to n = 24 (incl. its FOM solves) | 1300.2 ms |
+| offline total, without / with greedy | 53.5 ms / 1350.2 ms |
+| RB single query (reduced solve + t) | 64.1 µs |
+| RB single query, reduced solve only | 44.3 µs |
+| RB batched, per query (without / with residual) | 14.1 µs / 51.9 µs |
+| RB batched: observable reconstruction / residual norm, per query | 0.1 µs / 56.0 µs |
+
+| break-even number of queries | value |
+|---|---|
+| vs FOM, offline without greedy | 174 |
+| vs FOM, offline with greedy | 4373 |
+| vs exact S-matrix solver | 536 |
+
 
 ## What sets the basis size (snapshot singular values)
 

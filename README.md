@@ -305,7 +305,7 @@ Python 3.11 and 3.12.
 
 ```bash
 python -m qscatter.quickstart      # ~30 s; also available as the command `qscatter-quickstart`
-python -m pytest -q                # 70 tests
+python -m pytest -q                # 75 tests
 ```
 
 The quickstart:
@@ -462,7 +462,7 @@ reduced-basis experiment on the project's own validated physics.
 - Separation of sample efficiency from real speed-up.
 
 **Software quality.**
-- 70 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
+- 75 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
   checkpoint provenance.
 
 **Resume summary.** Built a reproducible scientific-ML benchmark for reducing expensive quantum-scattering
