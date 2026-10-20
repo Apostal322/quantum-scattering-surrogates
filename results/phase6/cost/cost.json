@@ -1,0 +1,39 @@
+{
+ "metadata": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "machine": "x86_64",
+  "os": "Linux-6.18.44-fc-v139-x86_64-with-glibc2.39",
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "OMP_NUM_THREADS": "1",
+  "fom_nodes": 1641,
+  "basis_size": 24,
+  "n_fom_solves": 24,
+  "repeats": 9,
+  "created": "2026-10-20T18:26:55Z"
+ },
+ "seconds": {
+  "fom_single_query": 0.0003728660100000525,
+  "exact_smatrix_single_query": 0.00016407688500066797,
+  "exact_smatrix_batched_per_energy": 6.712350499992681e-07,
+  "snapshots_total": 0.003566239999827303,
+  "svd_basis": 0.0017482440000549104,
+  "reduced_operator_assembly": 0.04823495499999808,
+  "greedy_total_including_its_fom_solves": 1.3001998979998461,
+  "greedy_indicator_sweeps": 0.9535027889999128,
+  "offline_total_without_greedy": 0.053549438999880294,
+  "offline_total_with_greedy": 1.3501830969998991,
+  "rb_single_query": 6.407638000041516e-05,
+  "rb_single_query_reduced_solve_only": 4.427291999945737e-05,
+  "rb_batched_per_query": 1.4073266601521972e-05,
+  "rb_batched_per_query_with_residual": 5.186081347652305e-05,
+  "rb_batched_observable_reconstruction": 1.1278808598191858e-07,
+  "rb_batched_residual_norm": 5.60413969725726e-05
+ },
+ "break_even_queries": {
+  "vs_fom_offline_without_greedy": 174,
+  "vs_fom_offline_with_greedy": 4373,
+  "vs_exact_smatrix": 536
+ }
+}

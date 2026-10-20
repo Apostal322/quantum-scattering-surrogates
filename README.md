@@ -305,7 +305,7 @@ Python 3.11 and 3.12.
 
 ```bash
 python -m qscatter.quickstart      # ~30 s; also available as the command `qscatter-quickstart`
-python -m pytest -q                # 57 tests
+python -m pytest -q                # 75 tests
 ```
 
 The quickstart:
@@ -382,9 +382,11 @@ qscatter/                      Python package
   surrogates/                  baselines.py (interpolation, GP), rational.py (AAA), mlp.py (PyTorch)
   parametric.py                4D surrogates: tensor spline, RBF, GP, MLP, Fourier MLP, POD+MLP, hybrid
   experiments/                 drivers for Experiments 1–5
+  phase6/                      Phase 6: FEM full-order model, reduced basis (Galerkin/LSPG), greedy, baselines
   data.py, metrics.py, config.py, plotting.py, quickstart.py
 scripts/                       run_* / analyze_* per experiment, audit, cost benchmark, reproduction check
-tests/                         57 pytest tests (physics, surrogates, extensions, regressions)
+configs/phase6/                Phase 6 experiment configurations
+tests/                         pytest suite (physics, surrogates, extensions, regressions, tests/phase6)
 results/                       raw results, datasets, small checkpoints, figures, summary tables
 docs/                          coursework report, English report, supervisor and defence material, provenance
 .github/workflows/ci.yml       CI on Ubuntu + Windows; scientific reproduction job
@@ -415,8 +417,8 @@ docs/                          coursework report, English report, supervisor and
 |---|---|
 | [`docs/REPORT_RU.md`](docs/REPORT_RU.md) | **full coursework report (Russian):** objectives, derivations, numerical methods, ML models, all experiments, errors, limitations, references |
 | [`docs/SUPERVISOR_BRIEF_RU.md`](docs/SUPERVISOR_BRIEF_RU.md) | two-page brief for the scientific supervisor (Russian) |
-| [`docs/DEFENSE_PREPARATION_RU.md`](docs/DEFENSE_PREPARATION_RU.md) | 28 likely defence questions with answers (Russian) |
-| [`docs/KEY_FIGURES_RU.md`](docs/KEY_FIGURES_RU.md) | the seven key figures and how to explain them (Russian) |
+| [`docs/DEFENSE_PREPARATION_RU.md`](docs/DEFENSE_PREPARATION_RU.md) | 34 likely defence questions with answers (Russian), including Phase 6 |
+| [`docs/KEY_FIGURES_RU.md`](docs/KEY_FIGURES_RU.md) | the eight key figures and how to explain them (Russian) |
 | [`docs/REPORT.md`](docs/REPORT.md) | English research report with errata |
 | [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) | experiment configurations, seeds, metrics, model architectures |
 | [`docs/FIGURES.md`](docs/FIGURES.md) | figure gallery |
@@ -425,6 +427,18 @@ docs/                          coursework report, English report, supervisor and
 | [`results/audit/audit_report.md`](results/audit/audit_report.md) | independent audit of the results |
 | [`results/reproduction_check.md`](results/reproduction_check.md) | latest recomputation of the headline numbers |
 | [`CHANGELOG.md`](CHANGELOG.md) | project history, including corrected conclusions |
+
+**Phase 6 (research branch `research/phase6-external-validation`, under review; its chapter is section 10.11 of the report).** The planned external CO2–He
+multi-fidelity benchmark was blocked because its data could not be retrieved. It was replaced by a projection-based
+reduced-basis experiment on the project's own validated physics.
+
+| document | content |
+|---|---|
+| [`docs/PHASE6_RESULTS_RU.md`](docs/PHASE6_RESULTS_RU.md) | Phase 6 results and recommendation (Russian) |
+| [`docs/PHASE6_LITERATURE_REVIEW.md`](docs/PHASE6_LITERATURE_REVIEW.md) · [RU](docs/PHASE6_LITERATURE_REVIEW_RU.md) | verified literature review, with the verification level for each source |
+| [`docs/PHASE6_DATA_AUDIT.md`](docs/PHASE6_DATA_AUDIT.md) | why the external dataset could not be used |
+| [`docs/PHASE6_NOVELTY_ASSESSMENT.md`](docs/PHASE6_NOVELTY_ASSESSMENT.md) | established vs. reproduced vs. new, and what still needs verification |
+| [`results/phase6/SUMMARY.md`](results/phase6/SUMMARY.md) | generated tables (`scripts/phase6/analyze.py`) |
 
 ### Skills demonstrated
 
@@ -448,7 +462,7 @@ docs/                          coursework report, English report, supervisor and
 - Separation of sample efficiency from real speed-up.
 
 **Software quality.**
-- 57 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
+- 75 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
   checkpoint provenance.
 
 **Resume summary.** Built a reproducible scientific-ML benchmark for reducing expensive quantum-scattering
