@@ -1,0 +1,277 @@
+{
+ "hardware": {
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "logical_cores": 4,
+  "threads_used": 1,
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1"
+ },
+ "fom": {
+  "nodes": 4331,
+  "h": 0.0025,
+  "X": 5.4125,
+  "assembly_s": 0.004398003000005701,
+  "single_s": 0.000359443669999564,
+  "batched_s": 0.0005804303671874678,
+  "max_abs_dt_vs_ode": 7.819447290838577e-05
+ },
+ "ode_single_s": 0.017469867499994508,
+ "staircase": {
+  "levels": [
+   {
+    "M": 250,
+    "max_abs_dt_vs_ode": 0.008849271360172847
+   },
+   {
+    "M": 500,
+    "max_abs_dt_vs_ode": 0.002360955558159314
+   },
+   {
+    "M": 1000,
+    "max_abs_dt_vs_ode": 0.0006003177948204303
+   },
+   {
+    "M": 2000,
+    "max_abs_dt_vs_ode": 0.00015072280544777374
+   },
+   {
+    "M": 4000,
+    "max_abs_dt_vs_ode": 3.7721123857241344e-05
+   },
+   {
+    "M": 8000,
+    "max_abs_dt_vs_ode": 9.432808996278583e-06
+   },
+   {
+    "M": 16000,
+    "max_abs_dt_vs_ode": 2.3583585897960028e-06
+   }
+  ],
+  "M_matched": 4000,
+  "single_s": 0.126268491360006,
+  "batched_1024_energies_fixed_heights_per_energy_s": 0.0005097524716797253,
+  "note": "batched timing measured after the main run with the same staircase (M_matched), heights (10, 10); vectorised over energies only"
+ },
+ "rb": [
+  {
+   "n": 16,
+   "r": 16,
+   "greedy_total_s": 0.7677572640000108,
+   "greedy_fom_s": 0.011120656000002782,
+   "greedy_indicator_s": 0.3580367819995445,
+   "snapshots_s": 0.00827197199987495,
+   "svd_s": 0.003625793000082922,
+   "assembly_s": 0.07492227199963963,
+   "rb_single_s": 3.8604705000579994e-05,
+   "rb_batched_s": 6.094422851266046e-06,
+   "rb_batched_with_residual_s": 1.8906390625073044e-05,
+   "break_even_queries": {
+    "vs_fem": 2392.9676496819584,
+    "vs_fem_sobol_design": 270.60315756807296,
+    "vs_ode": 44.04484477283553,
+    "vs_staircase_smatrix": 6.082214635099387
+   }
+  },
+  {
+   "n": 24,
+   "r": 24,
+   "greedy_total_s": 1.9032775649998257,
+   "greedy_fom_s": 0.015705166000770987,
+   "greedy_indicator_s": 0.8130172050005058,
+   "snapshots_s": 0.012206481999783136,
+   "svd_s": 0.00638136800034772,
+   "assembly_s": 0.1403838389996963,
+   "rb_single_s": 7.855921000100352e-05,
+   "rb_batched_s": 1.730431738256044e-05,
+   "rb_batched_with_residual_s": 4.5899671874849446e-05,
+   "break_even_queries": {
+    "vs_fem": 6776.0158928321625,
+    "vs_fem_sobol_design": 565.9682596916963,
+    "vs_ode": 109.43843518057356,
+    "vs_staircase_smatrix": 15.082641955440263
+   }
+  },
+  {
+   "n": 32,
+   "r": 32,
+   "greedy_total_s": 4.8463309650001065,
+   "greedy_fom_s": 0.024099454000406695,
+   "greedy_indicator_s": 2.3505507090007995,
+   "snapshots_s": 0.014614608000101725,
+   "svd_s": 0.011261065999860875,
+   "assembly_s": 0.1435041619997719,
+   "rb_single_s": 5.094720999977653e-05,
+   "rb_batched_s": 2.1037401367163255e-05,
+   "rb_batched_with_residual_s": 8.139495214853909e-05,
+   "break_even_queries": {
+    "vs_fem": 15709.518887197102,
+    "vs_fem_sobol_design": 549.049528801242,
+    "vs_ode": 278.22223675848585,
+    "vs_staircase_smatrix": 38.39665077970753
+   }
+  }
+ ],
+ "rbf_32": {
+  "fit_s": 6.157099960546475e-05,
+  "eval_per_point_s": 4.747343749222921e-07
+ },
+ "aaa_32": {
+  "fit_s": 0.0029569680000349763,
+  "eval_per_point_s": 1.2859179676638632e-07
+ },
+ "provenance": {
+  "config": {
+   "generalization_config": {
+    "name": "generalization",
+    "description": "Experiments B (B1 in-domain, B2 out-of-domain, B3 rectangular->Gaussian transfer), C (fair comparison incl. PyTorch MLP) and E (residual reliability) on the smooth double-Gaussian barrier.",
+    "s": 0.6,
+    "d": 4.0,
+    "X": 5.4125,
+    "h": 0.0025,
+    "train_lo": [
+     0.1,
+     8.0,
+     8.0
+    ],
+    "train_hi": [
+     10.0,
+     12.0,
+     12.0
+    ],
+    "ood_boxes": [
+     {
+      "label": "higher barriers (12-14)",
+      "lo": [
+       0.1,
+       12.0,
+       12.0
+      ],
+      "hi": [
+       10.0,
+       14.0,
+       14.0
+      ]
+     },
+     {
+      "label": "lower barriers (6-8)",
+      "lo": [
+       0.1,
+       6.0,
+       6.0
+      ],
+      "hi": [
+       10.0,
+       8.0,
+       8.0
+      ]
+     }
+    ],
+    "n_candidates": 2048,
+    "n_validation": 256,
+    "n_test": 1024,
+    "n_test_ood_per_box": 256,
+    "n_scans_validation": 2,
+    "n_scans_test": 6,
+    "n_scans_ood_per_box": 2,
+    "seeds": {
+     "candidates": 101,
+     "validation": 102,
+     "test": 104,
+     "test_ood": 107,
+     "scans_validation": 103,
+     "scans_test": 105,
+     "scans_ood": 108,
+     "design_sobol": 106,
+     "design_random": [
+      201,
+      202,
+      203
+     ],
+     "design_mlp": 109,
+     "rect_candidates": 110
+    },
+    "baseline_design": "sobol",
+    "budgets": [
+     8,
+     12,
+     16,
+     20,
+     24,
+     32,
+     48
+    ],
+    "rbf_kernels": [
+     "thin_plate_spline",
+     "cubic",
+     "quintic",
+     "linear"
+    ],
+    "mlp_budgets": [
+     48,
+     256,
+     1024,
+     4096
+    ],
+    "mlp_grid": {
+     "width": [
+      64,
+      128
+     ],
+     "lr": [
+      0.001,
+      0.003
+     ],
+     "epochs": 3000
+    },
+    "scan": {
+     "n_uniform": 4001,
+     "n_window": 401
+    },
+    "rect_width": 1.0,
+    "rect_lo": [
+     0.1,
+     6.0,
+     6.0
+    ],
+    "rect_hi": [
+     10.0,
+     14.0,
+     14.0
+    ],
+    "rect_budgets": [
+     24,
+     48,
+     96
+    ],
+    "rect_enrich_base": 48,
+    "enrich_budgets": [
+     4,
+     8,
+     12,
+     16
+    ],
+    "n_effectivity": 200,
+    "effectivity_budgets": [
+     12,
+     16,
+     20,
+     24
+    ]
+   },
+   "bases": [
+    16,
+    24,
+    32
+   ],
+   "repeats": 7
+  },
+  "git_commit": "49ecd79e6d1c325edb14af203fcd241c9f15a22a",
+  "code_modified_since_commit": false,
+  "python": "3.13.16",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "machine": "x86_64",
+  "created": "2026-10-20T19:37:17Z"
+ }
+}

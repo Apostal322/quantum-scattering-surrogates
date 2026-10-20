@@ -293,7 +293,8 @@ def section_cost(c, out):
             f"FEM: N = {f['nodes']}, single query {e(f['single_s'])} s, batched {e(f['batched_s'])} s/point, error vs ODE {e(f['max_abs_dt_vs_ode'])}.",
             f"ODE (DOP853, rtol 1e-10): {e(c['ode_single_s'])} s per energy.",
             f"Staircase S-matrix with FEM-equivalent accuracy: M = {c['staircase']['M_matched']} steps, {e(c['staircase']['single_s'])} s per energy "
-            "(levels: " + ", ".join(f"M={x['M']}: {e(x['max_abs_dt_vs_ode'])}" for x in c["staircase"]["levels"]) + ").", "",
+            "(levels: " + ", ".join(f"M={x['M']}: {e(x['max_abs_dt_vs_ode'])}" for x in c["staircase"]["levels"]) + "); "
+            f"batched over 1024 energies at fixed heights: {e(c['staircase'].get('batched_1024_energies_fixed_heights_per_energy_s'))} s per energy.", "",
             "| n | greedy offline s | single query s | batched s/pt | batched + residual s/pt | break-even vs FEM (greedy / Sobol design) | vs ODE | vs staircase |",
             "|---|---|---|---|---|---|---|---|"]
     for r in c["rb"]:

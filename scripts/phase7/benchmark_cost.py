@@ -174,7 +174,7 @@ def main():
                   f"| RB n={r['n']}: batched per point | {r['rb_batched_s']:.2e} |",
                   f"| RB n={r['n']}: break-even vs FEM / ODE / staircase (queries) | "
                   f"{r['break_even_queries']['vs_fem']:.0f} / {r['break_even_queries']['vs_ode']:.0f} / "
-                  f"{r['break_even_queries'].get('vs_staircase_smatrix')} |"]
+                  f"{(lambda v: '–' if v is None else f'{v:.0f}')(r['break_even_queries'].get('vs_staircase_smatrix'))} |"]
     (dst / "cost.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
