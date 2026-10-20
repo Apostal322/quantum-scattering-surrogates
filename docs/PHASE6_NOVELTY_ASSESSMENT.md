@@ -60,12 +60,16 @@ reproduction of any specific published number.
    (max |ΔT| ≈ 6e-9 on a 25 076-point resonance-resolved scan) with **10** FOM solves. AAA on t(k)
    needs **20** with its own greedy rule and more than 30 on a uniform grid. PCHIP and POD
    coefficient regression fail at every budget tested (max |ΔT| of order 1).
-2. **3D, (E, V_L, V_R):** see SUMMARY.md: error of RB vs RBF and POD regression for equal FOM
-   budgets, held-out random points and resonance-resolved scans; greedy vs Sobol, random and tensor
-   designs.
-3. **Residual as an error indicator:** rank correlation with true errors on held-out points, and how
-   often the bound ‖A⁻¹‖‖res‖ is satisfied and how tight it is, with ‖A⁻¹‖ measured by power
-   iteration (SUMMARY.md).
+2. **3D, (E, V_L, V_R):** RB-Galerkin reaches max |Δt| ≈ 2.3e-9 on 2048 held-out random points
+   and max |ΔT| ≈ 7e-9 on 6 held-out resonance-resolved scans (all 18 resonances resolved) with
+   **24** FOM solves, for any sampling design (greedy, Sobol, random). Residual greedy helps only at
+   intermediate budgets (n = 16: 1.1e-5 vs 8.7e-5 for Sobol). A 4×4×4 tensor grid is worse (9e-4 at
+   64 solves). Thin-plate RBF on t and POD coefficient regression on the same solves stay at errors
+   of order 1 up to 64 solves.
+3. **Residual as an error indicator** (256 held-out points): the Spearman correlation with the true
+   wave-function error is 0.84–0.99, and with |Δt| 0.66–0.82. The bound ‖A⁻¹‖‖res‖ ≥ ‖Δψ‖ holds on
+   100 % of points but overestimates by a median 440–1100× (up to 7e4×). ‖A⁻¹‖ (median 485, max 1.6e4)
+   grows near resonances, as theory predicts.
 4. **Basis size:** the numerical rank of dense snapshot sets is nearly **independent of resonance
    width** (Γ_min from 3e-2 to 6e-4 at three resonances: rank 13 → 11 at 1e-10). It **grows by about
    one per additional resonance** (2 → 8 resonances: rank 11 → 18).

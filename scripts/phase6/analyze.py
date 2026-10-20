@@ -140,7 +140,7 @@ def fig_3d(d):
         ax.set(xlabel="number of FOM solves", title=title)
     axs[0].set_ylabel("max error")
     axs[0].legend(fontsize=7, frameon=False)
-    fig.suptitle("Double barrier with parameters (E, V_L, V_R): error vs high-fidelity budget", fontsize=11)
+    fig.suptitle("Double barrier with parameters (E, V_L, V_R): error vs high-fidelity budget", fontsize=11, y=1.03)
     fig.savefig(FIG / "p6_3d_error_vs_budget.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
@@ -155,7 +155,7 @@ def fig_effectivity(d):
         ax.set(xscale="log", yscale="log", xlabel="residual ||b − A V c||", title=f"n = {row['n']}: ρ = {row['spearman_residual_vs_err_t']:.2f}")
     np.atleast_1d(axs)[0].set_ylabel("true error |t̂ − t|")
     fig.colorbar(sc, ax=axs, label="log10 ||A(μ)⁻¹||")
-    fig.suptitle("Residual indicator vs true error on 256 held-out points (greedy bases)", fontsize=10)
+    fig.suptitle("Residual indicator vs true error on 256 held-out points (greedy bases)", fontsize=10, y=1.06)
     fig.savefig(FIG / "p6_residual_vs_error.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
@@ -182,9 +182,8 @@ def fig_example_scan(d):
     S = fom.solve(mu_tr).T
     t_tr, _ = fom.observables(mu_tr, S[0], S[-1])
     rm = ReducedModel(fom, orthonormalize(S)[0])
-    sc = max(d["scans"], key=lambda s: max(VL for VL in s["heights"].values()))
-    poles = sorted(sc["poles"], key=lambda z: z[1], reverse=True)  # narrowest last (smallest |Im|)
-    zr, zi = poles[-1]
+    # the narrowest resonance over all held-out scans (smallest |Im E_pole|)
+    sc, (zr, zi) = max(((s, z) for s in d["scans"] for z in s["poles"]), key=lambda sz: sz[1][1])
     G = -2 * zi
     E = np.linspace(zr - 6 * G, zr + 6 * G, 1201)
     mu = np.column_stack([E, np.full_like(E, sc["heights"]["VL"]), np.full_like(E, sc["heights"]["VR"])])
