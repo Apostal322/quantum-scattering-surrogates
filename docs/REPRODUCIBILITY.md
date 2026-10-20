@@ -17,3 +17,22 @@
 | Bit-for-bit reproduction | verified for adaptive designs and an Experiment 1 MLP run | audit checks 10a/10b |
 | Wall-clock timings | reproducible in order of magnitude only (±30–50 % between runs) | `results/cost/cost_1d.md`, `cost_1d_run2.md` |
 | Known corrected errors documented | yes | `docs/REPORT.md` (errata), `docs/REPORT_RU.md` §12.2, [`CHANGELOG.md`](../CHANGELOG.md) |
+
+## Phase 6 (reduced basis)
+
+| item | status | where |
+|---|---|---|
+| Configurations | yes | `configs/phase6/*.json` (seeds for candidates, test, scans, designs are distinct) |
+| Provenance in every result | yes | `results/phase6/*/results.json` → `provenance` (config, git commit, `code_modified_since_commit`, versions) |
+| No test data in selection | yes, tested | greedy uses only the residual on candidates; `tests/phase6/test_rb.py`, `test_experiments.py` |
+| End-to-end smoke test of the runners | yes | `tests/phase6/test_experiments.py::test_experiment_runners_complete_end_to_end_on_a_small_config` |
+| Figures regenerable | yes | `python scripts/phase6/analyze.py` → `results/phase6/figures/`, `SUMMARY.md` |
+| Timings | order of magnitude (up to ~1.5× between runs on a shared VM) | `python scripts/phase6/benchmark_cost.py` → `results/phase6/cost/` |
+
+```bash
+OMP_NUM_THREADS=1 python scripts/phase6/run.py nwidth    # ~5 min
+OMP_NUM_THREADS=1 python scripts/phase6/run.py rb_1d     # ~3 min
+OMP_NUM_THREADS=1 python scripts/phase6/run.py rb_3d     # ~15 min
+OMP_NUM_THREADS=1 python scripts/phase6/benchmark_cost.py
+python scripts/phase6/analyze.py
+```

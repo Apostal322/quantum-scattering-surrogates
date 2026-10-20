@@ -110,19 +110,30 @@ R. J. Furnstahl, K. Godbey), which may or may not correspond to it.
 | 11 | arXiv:2609.03004 (data efficiency) | **NOT FOUND** | – | none |
 | 12 | arXiv:2610.12632 (derivative-aware spectral learning) | **NOT FOUND** | – | none |
 
-## 3. Background used for the novelty assessment (from prior knowledge, not re-verified in this session)
+## 3. Background used for the novelty assessment
 
-- Certified reduced-basis methods, residual-based a-posteriori estimators and weak greedy sampling:
-  J. S. Hesthaven, G. Rozza, B. Stamm, *Certified Reduced Basis Methods for Parametrized PDEs*,
-  Springer (2016).
-- RB for Helmholtz-type (indefinite) problems; stability constants that degrade near resonance;
-  the successive constraint method: S. Sen et al., J. Comput. Phys. 217 (2006); D. B. P. Huynh et al.,
-  C. R. Acad. Sci. Paris 345 (2007).
-- Projection-based scattering emulators in nuclear physics: R. J. Furnstahl, A. J. Garcia,
-  P. J. Millican, X. Zhang, Phys. Lett. B 809, 135719 (2020); J. A. Melendez et al., Phys. Lett. B 821,
-  136608 (2021); C. Drischler et al., *BUQEYE guide to projection-based emulators in nuclear physics*,
-  Front. Phys. 10, 1092931 (2023); E. Bonilla, P. Giuliani, K. Godbey, D. Lee, Phys. Rev. C 106,
-  054322 (2022).
+Status: the four items cited in the coursework report ([27], [31]–[33] there) were checked on
+2026-10-20 against library catalogues and publisher/arXiv pages in search indexes (metadata only;
+full texts not read). The others are from prior knowledge and not re-verified.
+
+- **(V-index)** Certified reduced-basis methods, residual-based a-posteriori estimators and weak
+  greedy sampling: J. S. Hesthaven, G. Rozza, B. Stamm, *Certified Reduced Basis Methods for
+  Parametrized Partial Differential Equations*, SpringerBriefs in Mathematics, Springer, Cham (©2016),
+  DOI 10.1007/978-3-319-22470-1. Mainly coercive problems; non-coercive ones are treated as examples.
+- **(V-index)** S. Sen, K. Veroy, D. B. P. Huynh, S. Deparis, N. C. Nguyen, A. T. Patera, "Natural
+  norm" a posteriori error estimators for reduced basis approximations, J. Comput. Phys. 217, 37–62
+  (2006), DOI 10.1016/j.jcp.2006.02.012. Includes a non-coercive Helmholtz acoustics example with
+  near-singular behaviour. The successive constraint method (D. B. P. Huynh et al., C. R. Acad. Sci.
+  Paris 345, 2007) is from prior knowledge, not re-verified.
+- Projection-based and variational scattering emulators in nuclear physics:
+  - **(V-index)** R. J. Furnstahl, A. J. Garcia, P. J. Millican, X. Zhang, Phys. Lett. B 809, 135719
+    (2020), DOI 10.1016/j.physletb.2020.135719: eigenvector continuation with the Kohn variational
+    principle (not Galerkin projection).
+  - **(V-index)** C. Drischler, J. A. Melendez, R. J. Furnstahl, A. J. Garcia, X. Zhang, *BUQEYE guide
+    to projection-based emulators in nuclear physics*, Front. Phys. 10, 1092931 (published 17 Feb
+    2023), DOI 10.3389/fphy.2022.1092931, arXiv:2212.04912.
+  - From prior knowledge, not re-verified: J. A. Melendez et al., Phys. Lett. B 821, 136608 (2021);
+    E. Bonilla, P. Giuliani, K. Godbey, D. Lee, Phys. Rev. C 106, 054322 (2022).
 - Time–frequency concentration (why a band-limited family of oscillatory functions on an interval
   has few significant degrees of freedom): H. J. Landau, H. O. Pollak, Bell Syst. Tech. J. 41 (1962).
 

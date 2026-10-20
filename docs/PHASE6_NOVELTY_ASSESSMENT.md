@@ -70,9 +70,11 @@ reproduction of any specific published number.
    wave-function error is 0.84–0.99, and with |Δt| 0.66–0.82. The bound ‖A⁻¹‖‖res‖ ≥ ‖Δψ‖ holds on
    100 % of points but overestimates by a median 440–1100× (up to 7e4×). ‖A⁻¹‖ (median 485, max 1.6e4)
    grows near resonances, as theory predicts.
-4. **Basis size:** the numerical rank of dense snapshot sets is nearly **independent of resonance
-   width** (Γ_min from 3e-2 to 6e-4 at three resonances: rank 13 → 11 at 1e-10). It **grows by about
-   one per additional resonance** (2 → 8 resonances: rank 11 → 18).
+4. **Basis size (9 double-barrier configurations only):** the numerical rank of dense snapshot sets
+   was nearly **independent of resonance width** (Γ_min from 3e-2 to 6e-4 at three resonances: rank
+   13 → 11 at 1e-10) and **grew by about one per additional resonance** (2 → 8 resonances: rank
+   11 → 18). In the well-width sweep the number of resonances and the well's phase count d·Δk/π grow
+   together, so the experiment cannot tell which of the two sets the rank.
 5. **Negative results:** POD coefficient regression is unusable for this resonant problem at every
    budget; LSPG is less accurate than Galerkin at small bases in 1D; the comparison with the exact
    S-matrix solver is unfavourable for any surrogate (Section G).

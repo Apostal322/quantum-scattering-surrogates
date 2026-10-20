@@ -382,9 +382,11 @@ qscatter/                      Python package
   surrogates/                  baselines.py (interpolation, GP), rational.py (AAA), mlp.py (PyTorch)
   parametric.py                4D surrogates: tensor spline, RBF, GP, MLP, Fourier MLP, POD+MLP, hybrid
   experiments/                 drivers for Experiments 1–5
+  phase6/                      Phase 6: FEM full-order model, reduced basis (Galerkin/LSPG), greedy, baselines
   data.py, metrics.py, config.py, plotting.py, quickstart.py
 scripts/                       run_* / analyze_* per experiment, audit, cost benchmark, reproduction check
-tests/                         57 pytest tests (physics, surrogates, extensions, regressions)
+configs/phase6/                Phase 6 experiment configurations
+tests/                         pytest suite (physics, surrogates, extensions, regressions, tests/phase6)
 results/                       raw results, datasets, small checkpoints, figures, summary tables
 docs/                          coursework report, English report, supervisor and defence material, provenance
 .github/workflows/ci.yml       CI on Ubuntu + Windows; scientific reproduction job

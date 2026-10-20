@@ -31,7 +31,7 @@ This file separates three things that are easy to blur in a report:
 | Approximating t as a function of **k** rather than E, and approximating the **complex amplitude** rather than T | I | Motivated by the textbook analytic structure (t meromorphic in k). The choice is ours. |
 | Discarding Froissart doublets (negligible residue, or pole–zero pairs) | P (concept) / I (thresholds) | Spurious poles are discussed in the AAA paper; our thresholds are 1e-10·max\|t\| and 1e-3·\|Im pole\| |
 | Greedy sampling at argmin \|barycentric denominator\| with a look-ahead error check | P (idea) / I (adaptation) | The greedy MRI loop (gMRI) in the code of Pradovera, Hiptmair & Perugia. Their MRI weights are not determined for scalar outputs, so we use AAA least-squares weights. Our parameters: tolerance 1e-8, three consecutive passes, then bisection of the largest gap. |
-| Calibrated error estimate driving a greedy choice | P (principle) | Greedy emulators of Giri et al. (2026). We use only the principle; their Galerkin / residual machinery needs solution vectors, which our scalar-output setting does not provide. |
+| Calibrated error estimate driving a greedy choice | P (principle) | Greedy emulators of Giri et al. (2026). In Phases 1–5 we use only the principle, because the scalar-output setting provides no solution vectors; Phase 6 implements the residual/Galerkin variant with FEM wave functions. |
 | Segment-length adaptive sampling √(ΔÊ² + Δy²) | P | Default loss of 1D adaptive-sampling libraries (`adaptive`, Nijholt et al.) |
 | Segment sampling on the complex amplitude, or on log T | I | Our variants |
 | MLP, Adam, cosine schedule, low-data protocol (interleaved validation, early stopping with refit) | P (components) / I (protocol) | Kingma & Ba; PyTorch. The protocol and its ablation are ours. |
@@ -40,6 +40,10 @@ This file separates three things that are easy to blur in a report:
 | POD + MLP of reduced coefficients; compression error reported separately from coefficient error | P (method) / I (setup) | Hesthaven & Ubbiali (2018); the error separation follows the spirit of Dölz & Henríquez |
 | Dissipative pretraining with an absorbing well −iW (W = 0.05), half the budget lossy and half lossless, same geometries | P (idea) / I (transfer to 1D) | Nam, Park & Jang (2026). They broaden electromagnetic resonances with material loss; the transfer to 1D and the value of W are ours. |
 | Hybrid surrogate: learn the smooth single-barrier S-matrix, compose exactly with the star product | I | Our structure-exploiting model. It requires knowing the block decomposition. |
+| **Phase 6:** P1 finite elements with exact transparent (Robin) scattering boundary conditions, affine in (E, k, V_j) | P (method) / I (implementation) | Textbook FEM; validated here against the S-matrix solver (O(h²), same global phase) |
+| **Phase 6:** POD/SVD basis, Galerkin and LSPG projection, offline/online splitting, residual norm, ‖e‖ ≤ ‖A⁻¹‖‖res‖, weak greedy | P | Hesthaven, Rozza & Stamm (2016); Sen et al. (2006); scattering emulators of Drischler et al. (2023), Gnech et al. (arXiv:2511.01844), Catacora-Rios et al. (PRC 113, 044623) |
+| **Phase 6:** residual evaluated through a thin QR of the residual space (instead of Gram matrices) | P (standard numerical linear algebra) / I (use) | Our fix after the Gram form showed a ~1e-7 round-off floor that stalled the greedy |
+| **Phase 6:** POD coefficient regression and direct t interpolation on the same FOM solves, as comparators | I (protocol) | Equal FOM-solve budgets; the "best design" for these baselines is chosen on test data (optimistic for them) |
 
 ## 3. New empirical findings (F), with their scope
 
@@ -56,6 +60,10 @@ This file separates three things that are easy to blur in a report:
 | AAA result holds on 27 unseen systems (asymmetric, doublets, smooth potential, noise); limits: under-resolution with many poles, instability only in under-resolved fits, premature self-certification at noise 1e-4 | Exp. 5 | Same scope as above |
 | Pole width vs FWHM: agree to 8e-5 for isolated resonances, deviation ~ (Γ/Λ)², fails for overlapping doublets | Exp. 5, §10.9 | Standard Breit–Wigner/Fano physics; quantified here |
 | Solver-call reduction becomes wall-clock speed-up only with an expensive solver (670–700× with the ODE solver, none with the fast one) | `results/cost/` (two runs) | Single machine, timing spread ~30–50 % |
+| **Phase 6:** projection RB reaches the FOM round-off floor with 10 FOM solves in E (AAA: 20 with its own greedy) and 24 in (E, V_L, V_R), where RBF and POD regression fail up to 64 | `results/phase6/SUMMARY.md` | One 1D double-barrier family, affine parameters only; RB is intrusive |
+| **Phase 6:** residual ranks wave-function errors (Spearman 0.84–0.99) but the bound is loose (median 440–1100×) | `results/phase6/rb_3d/` | Euclidean nodal norms; ‖A⁻¹‖ by power iteration (a lower estimate) |
+| **Phase 6:** basis size nearly independent of resonance width, growing with the number of resonances | `results/phase6/nwidth/` | 9 configurations; number of resonances and well length are confounded; hypothesis, not theorem |
+| **Phase 6:** RB online cost vs FOM and exact solver | `results/phase6/cost/cost.md` | RB beats the FEM FOM per query; it does not beat the vectorised exact solver; break-even counts in the file |
 
 **Established methods, not ours:** AAA and rational approximation in general, splines, PCHIP, Gaussian processes,
 MLPs, Fourier features, POD, the Redheffer star product. The project contributes a systematic comparison, the
