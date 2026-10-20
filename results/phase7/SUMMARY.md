@@ -84,6 +84,148 @@ Pole shift when the domain grows (rel_cut × 1e-2): 7.2e-07, 4.9e-06, 1.5e-05
 | 20000 | 4.95e-04 | 3 | 3 / 3 |
 | 100000 | 9.90e-05 | 3 | 3 / 3 |
 
+<!-- generalization: commit 2a57273, modified since commit: False, wall 1341 s -->
+## B/C. Generalisation and fair comparison (3D: E, V_L, V_R)
+
+FOM: 4331 nodes, h = 0.0025, X = 5.4125. RBF kernel chosen on validation: **linear** (validation RMSE of t: thin_plate_spline 2.3e-01, cubic 2.8e-01, quintic 3.9e-01, linear 2.1e-01).
+Data-driven baselines on the pre-declared design `sobol` only.
+
+### Max |Δt| on the in-domain test (1024 points)
+
+| n | RB greedy (Galerkin) | RB greedy (LSPG) | RB Sobol | RB random (median of 3) | RBF (Sobol) | POD regression (Sobol) |
+|---|---|---|---|---|---|---|
+| 8 | 1.3e+00 | 9.8e-01 | 7.7e-01 | 8.4e-01 | 1.2e+00 | 1.4e+00 |
+| 12 | 8.6e-01 | 9.9e-01 | 6.2e-01 | 7.9e-01 | 8.7e-01 | 1.4e+00 |
+| 16 | 1.0e-01 | 4.5e-01 | 4.7e-01 | 1.8e-01 | 8.4e-01 | 1.4e+00 |
+| 20 | 9.2e-03 | 8.2e-02 | 5.6e-03 | 1.6e-02 | 8.6e-01 | 1.3e+00 |
+| 24 | 5.7e-04 | 2.7e-03 | 6.3e-04 | 8.6e-04 | 8.6e-01 | 1.2e+00 |
+| 32 | 3.9e-06 | 8.7e-06 | 8.7e-06 | 3.4e-05 | 8.8e-01 | 1.2e+00 |
+| 48 | 1.2e-09 | 1.7e-09 | 1.7e-09 | 7.8e-09 | 8.9e-01 | 1.3e+00 |
+
+| MLP: n (own Sobol design) | chosen (width, lr) | max abs Δt | MAE T | fit s |
+|---|---|---|---|---|
+| 48 | 128, 0.003 | 8.7e-01 | 4.3e-02 | 7 |
+| 256 | 128, 0.001 | 7.8e-01 | 1.6e-02 | 33 |
+| 1024 | 128, 0.003 | 7.7e-01 | 9.2e-03 | 79 |
+| 4096 | 128, 0.003 | 7.6e-01 | 9.1e-03 | 243 |
+
+### Max |Δt| on the out-of-domain test (512 points, extrapolation)
+
+| n | RB greedy (Galerkin) | RB greedy (LSPG) | RB Sobol | RB random (median of 3) | RBF (Sobol) | POD regression (Sobol) |
+|---|---|---|---|---|---|---|
+| 8 | 1.1e+00 | 1.0e+00 | 1.1e+00 | 1.0e+00 | 1.6e+00 | 1.8e+00 |
+| 12 | 1.4e+00 | 1.1e+00 | 1.0e+00 | 9.2e-01 | 1.2e+00 | 1.5e+00 |
+| 16 | 8.4e-02 | 4.9e-01 | 1.3e-01 | 2.8e-01 | 1.3e+00 | 1.5e+00 |
+| 20 | 1.0e-02 | 3.1e-01 | 1.6e-02 | 6.2e-02 | 1.4e+00 | 1.1e+00 |
+| 24 | 2.0e-03 | 1.4e-02 | 1.6e-03 | 3.1e-03 | 1.4e+00 | 1.4e+00 |
+| 32 | 1.2e-05 | 4.3e-05 | 2.3e-05 | 4.9e-05 | 1.2e+00 | 1.6e+00 |
+| 48 | 8.0e-10 | 3.4e-08 | 3.9e-09 | 1.3e-08 | 1.2e+00 | 1.8e+00 |
+
+| MLP: n (own Sobol design) | chosen (width, lr) | max abs Δt | MAE T | fit s |
+|---|---|---|---|---|
+| 48 | 128, 0.003 | 1.6e+00 | 1.4e-01 | 7 |
+| 256 | 128, 0.001 | 1.9e+00 | 1.2e-01 | 33 |
+| 1024 | 128, 0.003 | 1.4e+00 | 1.2e-01 | 79 |
+| 4096 | 128, 0.003 | 1.9e+00 | 1.6e-01 | 243 |
+
+### Resonance scans (test: 6 height pairs; OOD: 4)
+
+| n | method | split | recall | max peak shift / Γ | max FWHM rel. err | spurious peaks (FOM) |
+|---|---|---|---|---|---|---|
+| 8 | RB greedy | test | 0.00 | 3.0e+00 | 6.9e+00 | 10 (0) |
+| 8 | RB greedy | ood | 0.00 | 3.0e+00 | – | 5 (0) |
+| 8 | RB Sobol | test | 0.00 | 3.0e+00 | 2.3e+00 | 0 (0) |
+| 8 | RB Sobol | ood | 0.00 | 3.0e+00 | 5.9e+00 | 1 (0) |
+| 8 | RBF Sobol | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 8 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 8 | POD reg. Sobol | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 8 | POD reg. Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 12 | RB greedy | test | 0.11 | 9.0e-01 | 1.2e+00 | 0 (0) |
+| 12 | RB greedy | ood | 0.07 | 3.0e+00 | 3.6e+00 | 1 (0) |
+| 12 | RB Sobol | test | 0.17 | 3.0e+00 | 6.5e-01 | 0 (0) |
+| 12 | RB Sobol | ood | 0.00 | 3.0e+00 | 2.7e+00 | 1 (0) |
+| 12 | RBF Sobol | test | 0.00 | 3.0e+00 | – | 1 (0) |
+| 12 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 12 | POD reg. Sobol | test | 0.00 | 3.0e+00 | – | 2 (0) |
+| 12 | POD reg. Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 16 | RB greedy | test | 1.00 | 3.4e-02 | 7.4e-02 | 0 (0) |
+| 16 | RB greedy | ood | 0.64 | 2.0e+00 | 2.3e-01 | 0 (0) |
+| 16 | RB Sobol | test | 0.61 | 3.0e+00 | 8.6e-02 | 6 (0) |
+| 16 | RB Sobol | ood | 0.57 | 3.0e+00 | 2.3e+00 | 4 (0) |
+| 16 | RBF Sobol | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 16 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 16 | POD reg. Sobol | test | 0.00 | 3.0e+00 | – | 2 (0) |
+| 16 | POD reg. Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 20 | RB greedy | test | 1.00 | 8.9e-03 | 7.3e-03 | 0 (0) |
+| 20 | RB greedy | ood | 1.00 | 5.6e-01 | 3.0e-02 | 0 (0) |
+| 20 | RB Sobol | test | 0.94 | 4.2e-02 | 1.3e-01 | 0 (0) |
+| 20 | RB Sobol | ood | 0.71 | 2.4e-01 | 2.5e-01 | 0 (0) |
+| 20 | RBF Sobol | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 20 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 20 | POD reg. Sobol | test | 0.00 | 3.0e+00 | 1.0e+01 | 2 (0) |
+| 20 | POD reg. Sobol | ood | 0.00 | 3.1e+00 | – | 0 (0) |
+| 24 | RB greedy | test | 1.00 | 3.3e-04 | 1.6e-03 | 0 (0) |
+| 24 | RB greedy | ood | 1.00 | 6.1e-02 | 7.3e-03 | 0 (0) |
+| 24 | RB Sobol | test | 1.00 | 3.6e-03 | 4.0e-03 | 0 (0) |
+| 24 | RB Sobol | ood | 1.00 | 9.7e-02 | 1.6e-03 | 0 (0) |
+| 24 | RBF Sobol | test | 0.00 | 3.0e+00 | 1.7e+01 | 0 (0) |
+| 24 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 24 | POD reg. Sobol | test | 0.00 | 3.0e+00 | 8.4e+00 | 3 (0) |
+| 24 | POD reg. Sobol | ood | 0.00 | 3.1e+00 | – | 0 (0) |
+| 32 | RB greedy | test | 1.00 | 3.3e-06 | 1.8e-05 | 0 (0) |
+| 32 | RB greedy | ood | 1.00 | 1.1e-02 | 9.2e-05 | 0 (0) |
+| 32 | RB Sobol | test | 1.00 | 3.7e-05 | 2.4e-05 | 0 (0) |
+| 32 | RB Sobol | ood | 1.00 | 8.4e-03 | 8.0e-05 | 0 (0) |
+| 32 | RBF Sobol | test | 0.00 | 3.0e+00 | 1.5e+01 | 0 (0) |
+| 32 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 32 | POD reg. Sobol | test | 0.00 | 3.0e+00 | 1.4e+01 | 2 (0) |
+| 32 | POD reg. Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 48 | RB greedy | test | 1.00 | 4.3e-07 | 4.3e-08 | 0 (0) |
+| 48 | RB greedy | ood | 1.00 | 6.8e-07 | 1.6e-08 | 0 (0) |
+| 48 | RB Sobol | test | 1.00 | 4.3e-07 | 4.3e-08 | 0 (0) |
+| 48 | RB Sobol | ood | 1.00 | 9.2e-06 | 1.9e-08 | 0 (0) |
+| 48 | RBF Sobol | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 48 | RBF Sobol | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 48 | POD reg. Sobol | test | 0.00 | 3.0e+00 | 1.7e+01 | 0 (0) |
+| 48 | POD reg. Sobol | ood | 0.00 | 3.4e+00 | – | 0 (0) |
+| 48 | MLP | test | 0.00 | 3.0e+00 | – | 0 (0) |
+| 48 | MLP | ood | 0.00 | 3.0e+00 | – | 0 (0) |
+| 256 | MLP | test | 0.00 | 3.0e+00 | 1.6e+00 | 0 (0) |
+| 256 | MLP | ood | 0.00 | 3.0e+00 | 1.4e+00 | 2 (0) |
+| 1024 | MLP | test | 0.00 | 3.0e+00 | 2.5e-01 | 0 (0) |
+| 1024 | MLP | ood | 0.00 | 3.0e+00 | 7.4e+00 | 1 (0) |
+| 4096 | MLP | test | 0.00 | 3.0e+00 | 5.8e-01 | 0 (0) |
+| 4096 | MLP | ood | 0.00 | 3.0e+00 | 1.7e+00 | 0 (0) |
+
+### B3. Rectangular-barrier basis transferred to the Gaussian problem
+
+| rectangular snapshots | Gaussian snapshots | r | max abs Δt test | max abs Δt OOD | scan recall (test) |
+|---|---|---|---|---|---|
+| 24 | 0 | 24 | 2.0e-01 | 3.0e-01 | 0.33 |
+| 48 | 0 | 48 | 1.2e-04 | 1.3e-04 | 1.00 |
+| 96 | 0 | 57 | 1.6e-05 | 1.2e-05 | 1.00 |
+| 48 | 4 | 52 | 2.8e-05 | 4.3e-05 | 1.00 |
+| 48 | 8 | 56 | 1.5e-07 | 3.1e-07 | 1.00 |
+| 48 | 12 | 59 | 3.6e-08 | 8.4e-08 | 1.00 |
+| 48 | 16 | 62 | 1.0e-08 | 2.2e-08 | 1.00 |
+
+## E. Residual reliability (greedy RB)
+
+Certified bound: ‖e_ψ‖ ≤ ‖res‖ / σ_min(A), σ_min from the banded Golub–Kahan eigenproblem minus a floating-point margin. Power iteration (Phase 6) gives a *lower* estimate of ‖A⁻¹‖: its product with the certified σ_min ranges over [0.966215, 0.999998], so it cannot serve as a bound.
+
+| n | points | Spearman(res, ‖e_ψ‖) | Spearman(res, abs e_t) | bound holds (ψ) | bound holds (t)* | median bound/‖e_ψ‖ | median bound/abs e_t |
+|---|---|---|---|---|---|---|---|
+| 12 | random (200) | 0.98 | 0.93 | 1.000 | 1.000 | 5.5e+01 | 3.2e+03 |
+| 12 | near_resonance (126) | 0.43 | 0.80 | 1.000 | 1.000 | 3.3e+02 | 1.1e+05 |
+| 16 | random (200) | 0.92 | 0.92 | 1.000 | 1.000 | 2.8e+01 | 1.4e+03 |
+| 16 | near_resonance (126) | 0.37 | 0.68 | 1.000 | 1.000 | 9.5e+01 | 2.2e+04 |
+| 20 | random (200) | 0.96 | 0.96 | 1.000 | 1.000 | 4.9e+01 | 2.5e+03 |
+| 20 | near_resonance (126) | 0.75 | 0.85 | 1.000 | 1.000 | 2.3e+02 | 6.0e+04 |
+| 24 | random (200) | 0.97 | 0.96 | 1.000 | 1.000 | 5.7e+01 | 2.9e+03 |
+| 24 | near_resonance (126) | 0.72 | 0.67 | 1.000 | 1.000 | 4.0e+02 | 1.0e+05 |
+
+*The bound is proved for the wave-function error. Since |e_t| = |e_ψ(L)| ≤ ‖e_ψ‖_∞ ≤ ‖e_ψ‖_2, it also bounds the error of t.
+
 <!-- slice1d: commit 1965294, modified since commit: False, wall 145 s -->
 ## C-1D. Energy-only methods vs RB on the test scans (heights fixed)
 
@@ -234,5 +376,19 @@ Online solve precision: complex128 3.4e-08, complex64 4.0e-07; max cond of the r
 | 30.0 | 0.16 | 32 | 1.1e-08; 1.00 | 1.6e-08; 1.00 | 1.3e-07; 1.00 | 1.00 |
 | 30.0 | 0.16 | 48 | 1.1e-08; 1.00 | 1.6e-08; 1.00 | 7.8e-08; 1.00 | 1.00 |
 
+## Cost and break-even
 
-Missing experiments: generalization, cost
+Hardware: Intel(R) Xeon(R) Processor @ 2.10GHz, 1 thread (of 4 logical cores); numpy 2.5.3, scipy 1.18.1.
+
+FEM: N = 4331, single query 3.6e-04 s, batched 5.8e-04 s/point, error vs ODE 7.8e-05.
+ODE (DOP853, rtol 1e-10): 1.7e-02 s per energy.
+Staircase S-matrix with FEM-equivalent accuracy: M = 4000 steps, 1.3e-01 s per energy (levels: M=250: 8.8e-03, M=500: 2.4e-03, M=1000: 6.0e-04, M=2000: 1.5e-04, M=4000: 3.8e-05, M=8000: 9.4e-06, M=16000: 2.4e-06); batched over 1024 energies at fixed heights: 5.1e-04 s per energy.
+
+| n | greedy offline s | single query s | batched s/pt | batched + residual s/pt | break-even vs FEM (greedy / Sobol design) | vs ODE | vs staircase |
+|---|---|---|---|---|---|---|---|
+| 16 | 0.77 | 3.9e-05 | 6.1e-06 | 1.9e-05 | 2393 / 271 | 44 | 6 |
+| 24 | 1.90 | 7.9e-05 | 1.7e-05 | 4.6e-05 | 6776 / 566 | 109 | 15 |
+| 32 | 4.85 | 5.1e-05 | 2.1e-05 | 8.1e-05 | 15710 / 549 | 278 | 38 |
+
+RBF (32 points): fit 6.2e-05 s, 4.7e-07 s/point. AAA (32 points): fit 3.0e-03 s, 1.3e-07 s/point.
+
