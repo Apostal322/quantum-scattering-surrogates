@@ -415,8 +415,8 @@ docs/                          coursework report, English report, supervisor and
 |---|---|
 | [`docs/REPORT_RU.md`](docs/REPORT_RU.md) | **full coursework report (Russian):** objectives, derivations, numerical methods, ML models, all experiments, errors, limitations, references |
 | [`docs/SUPERVISOR_BRIEF_RU.md`](docs/SUPERVISOR_BRIEF_RU.md) | two-page brief for the scientific supervisor (Russian) |
-| [`docs/DEFENSE_PREPARATION_RU.md`](docs/DEFENSE_PREPARATION_RU.md) | 28 likely defence questions with answers (Russian) |
-| [`docs/KEY_FIGURES_RU.md`](docs/KEY_FIGURES_RU.md) | the seven key figures and how to explain them (Russian) |
+| [`docs/DEFENSE_PREPARATION_RU.md`](docs/DEFENSE_PREPARATION_RU.md) | 34 likely defence questions with answers (Russian), including Phase 6 |
+| [`docs/KEY_FIGURES_RU.md`](docs/KEY_FIGURES_RU.md) | the eight key figures and how to explain them (Russian) |
 | [`docs/REPORT.md`](docs/REPORT.md) | English research report with errata |
 | [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) | experiment configurations, seeds, metrics, model architectures |
 | [`docs/FIGURES.md`](docs/FIGURES.md) | figure gallery |
@@ -426,7 +426,7 @@ docs/                          coursework report, English report, supervisor and
 | [`results/reproduction_check.md`](results/reproduction_check.md) | latest recomputation of the headline numbers |
 | [`CHANGELOG.md`](CHANGELOG.md) | project history, including corrected conclusions |
 
-**Phase 6 (research branch `research/phase6-external-validation`, not merged; under review).** The planned external CO2–He
+**Phase 6 (research branch `research/phase6-external-validation`, under review; its chapter is section 10.11 of the report).** The planned external CO2–He
 multi-fidelity benchmark was blocked because its data could not be retrieved. It was replaced by a projection-based
 reduced-basis experiment on the project's own validated physics.
 
@@ -460,7 +460,7 @@ reduced-basis experiment on the project's own validated physics.
 - Separation of sample efficiency from real speed-up.
 
 **Software quality.**
-- 57 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
+- 70 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
   checkpoint provenance.
 
 **Resume summary.** Built a reproducible scientific-ML benchmark for reducing expensive quantum-scattering
