@@ -1,0 +1,25 @@
+{
+  "name": "generalization",
+  "description": "Experiments B (B1 in-domain, B2 out-of-domain, B3 rectangular->Gaussian transfer), C (fair comparison incl. PyTorch MLP) and E (residual reliability) on the smooth double-Gaussian barrier.",
+  "s": 0.6, "d": 4.0, "X": 5.4125, "h": 0.0025,
+  "train_lo": [0.1, 8.0, 8.0], "train_hi": [10.0, 12.0, 12.0],
+  "ood_boxes": [
+    {"label": "higher barriers (12-14)", "lo": [0.1, 12.0, 12.0], "hi": [10.0, 14.0, 14.0]},
+    {"label": "lower barriers (6-8)", "lo": [0.1, 6.0, 6.0], "hi": [10.0, 8.0, 8.0]}
+  ],
+  "n_candidates": 2048, "n_validation": 256, "n_test": 1024, "n_test_ood_per_box": 256,
+  "n_scans_validation": 2, "n_scans_test": 6, "n_scans_ood_per_box": 2,
+  "seeds": {"candidates": 101, "validation": 102, "test": 104, "test_ood": 107,
+            "scans_validation": 103, "scans_test": 105, "scans_ood": 108,
+            "design_sobol": 106, "design_random": [201, 202, 203], "design_mlp": 109,
+            "rect_candidates": 110},
+  "baseline_design": "sobol",
+  "budgets": [8, 12, 16, 20, 24, 32, 48],
+  "rbf_kernels": ["thin_plate_spline", "cubic", "quintic", "linear"],
+  "mlp_budgets": [48, 256, 1024, 4096],
+  "mlp_grid": {"width": [64, 128], "lr": [0.001, 0.003], "epochs": 3000},
+  "scan": {"n_uniform": 4001, "n_window": 401},
+  "rect_width": 1.0, "rect_lo": [0.1, 6.0, 6.0], "rect_hi": [10.0, 14.0, 14.0],
+  "rect_budgets": [24, 48, 96], "rect_enrich_base": 48, "enrich_budgets": [4, 8, 12, 16],
+  "n_effectivity": 200, "effectivity_budgets": [12, 16, 20, 24]
+}

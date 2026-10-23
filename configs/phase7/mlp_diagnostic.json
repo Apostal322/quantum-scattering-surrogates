@@ -1,0 +1,13 @@
+{
+  "name": "mlp_diagnostic",
+  "description": "Audit 2026-10: bounded, validation-only diagnostic of the Phase 7 MLP failure (architecture grid, longer training, seeds, near/far-resonance error split, train error, equal-data RBF, oracle resonance-dense design). Frozen before running.",
+  "splits_config": "generalization.json",
+  "budgets": [1024, 4096],
+  "grid": {"width": [128, 256], "depth": [3, 4], "lr": 0.003, "epochs": 10000, "patience": 1500},
+  "seeds": [0, 1, 2],
+  "pole_grid": 7,
+  "near_factor": 10.0,
+  "rbf_kernels": ["thin_plate_spline", "cubic", "linear"],
+  "seed_resonance_design": 401,
+  "processes": 4
+}
