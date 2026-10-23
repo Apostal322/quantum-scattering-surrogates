@@ -106,8 +106,9 @@ of $T(E)$ on a dense, resonance-resolved reference grid.
    which no other method is given. With the strict peak-relative criterion the MLP resolves 61–62/68 held-out
    resonances (not 66–68/68 as first reported; see `docs/audit/ISSUE_REGISTER.md`).
 8. **Fewer solver calls ≠ faster.** With a fast solver no surrogate wins. With a 4.4 ms/call ODE solver, 30 points +
-   AAA is **670–700× faster** than a direct 20,001-point scan (two measured runs). The MLP gains only 2.6–3.9×,
-   because training cost dominates.
+   AAA is **670–700× faster** than a direct 20,001-point scan (two measured runs; 620× in an audit re-run on a
+   different VM, where absolute times were 1.5–2.2× slower). The MLP gains only 2.6–3.9×, because training cost
+   dominates.
 
 Negative results and corrected errors are documented: see the errata in [`docs/REPORT.md`](docs/REPORT.md), §12.2 of
 the Russian report and [`CHANGELOG.md`](CHANGELOG.md).

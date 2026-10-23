@@ -60,13 +60,16 @@ read**. Items marked [snippet] rest on search snippets only. The Phase 6 review
 - **Nakatsukasa, Sète, Trefethen**, AAA, *SIAM J. Sci. Comput.* (2018).
 - **Bonizzoni, Nobile, Perugia, Pradovera**, least-squares Padé of Helmholtz maps, *Adv. Comput.
   Math.* 46 (2020).
-- **Pradovera**, minimal rational interpolation (MRI), *SIAM J. Numer. Anal.* (2020).
+- **Pradovera**, minimal rational interpolation (MRI), *SIAM J. Numer. Anal.* 58(4), 2265–2293 (2020),
+  DOI 10.1137/19M1269695.
 - **Pradovera**, greedy Loewner, *Adv. Comput. Math.* (2023).
 - **Nobile, Pradovera**, *ESAIM: M2AN* 55, 1895 (2021). Rational frequency surrogates extended to
   more parameters by pole matching, with documented difficulties.
-- **Bruno, Santana, Trefethen**, AAA for resonances, *SIAM J. Sci. Comput.* 48, A1260.
-- **Bruschini**, "SPARSE", arXiv:2507.01002. AAA on real-energy T-matrix elements of radial
-  Schrödinger equations to locate poles [snippet].
+- **Bruno, Santana, Trefethen**, AAA for resonances, *SIAM J. Sci. Comput.* 48(3), A1260–A1283 (2026),
+  DOI 10.1137/24M1690680.
+- **Bruschini**, "SPARSE", arXiv:2507.01002. Version 1 used AAA on real-energy T-matrix elements of
+  radial Schrödinger equations to locate poles [snippet]; according to arXiv, **version 2 removed the
+  AAA extrapolation to complex energies**, so this applies to v1 only (audit 2026-10).
 - Loewner and moment matching: **Mayo, Antoulas** (2007); **Schulze, Unger, Beattie, Gugercin**,
   *Linear Algebra Appl.* 537 (2018).
 
@@ -128,6 +131,10 @@ read**. Items marked [snippet] rest on search snippets only. The Phase 6 review
   the greedy is counted (`results/phase7/cost/cost.md`).
 
 ## 5. Before any publication
+
+Bibliographic details were re-checked in the audit (`docs/audit/BIBLIOGRAPHY_CHECK.md`, items 34–40).
+Whether Maldonado et al. treat energy as an emulated parameter remains **unverified**.
+
 
 Read in full: Maldonado et al. 2025, Giri et al. 2026, Bruschini (SPARSE), Pradovera 2020 (MRI),
 Nobile & Pradovera 2021, and Sen et al. 2006. Check in particular whether energy is a parameter in

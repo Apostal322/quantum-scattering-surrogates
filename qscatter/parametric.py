@@ -226,7 +226,7 @@ class MLPParam:
         yv = torch.tensor(((np.column_stack([tv.real, tv.imag]) - self.mu) / self.sd).astype(np.float32))
         opt = torch.optim.Adam(self.net.parameters(), lr=self.lr)
         sch = torch.optim.lr_scheduler.CosineAnnealingLR(opt, self.steps, eta_min=self.lr * 1e-2)
-        best, self.best_step = float("inf"), 0
+        best, self.best_step, state = float("inf"), 0, None
         for step in range(1, self.steps + 1):
             idx = torch.randint(0, len(x), (min(self.batch, len(x)),), generator=g)
             opt.zero_grad()
@@ -239,6 +239,8 @@ class MLPParam:
                     vl = torch.mean((self.net(xv) - yv) ** 2).item()
                 if vl < best:
                     best, self.best_step, state = vl, step, copy.deepcopy(self.net.state_dict())
+        if state is None:  # every validation loss was non-finite: fail loudly instead of an UnboundLocalError
+            raise FloatingPointError("MLPParam training diverged: no finite validation loss")
         self.net.load_state_dict(state)
         self.best_val = best
         return self

@@ -224,3 +224,55 @@ def test_committed_phase7_manifest_matches_the_split_code_and_sets_are_disjoint(
     designs += [np.random.default_rng(r).uniform(lo, hi, (48, 3)) for r in cfg["seeds"]["design_random"]]
     for Dset in designs:
         assert check_disjoint(Dset, sp.validation, sp.test, sp.test_ood)
+
+
+# ----------------------------------------------------------------- reduced-basis mathematics
+
+
+def test_projection_with_a_complete_basis_reproduces_the_full_order_model():
+    """Galerkin and LSPG with V = an orthonormal basis of C^N must return the FOM solution exactly
+    (complex conjugation / Hermitian projection, reduced right-hand side, observable extraction),
+    also for complex energies used in pole searches."""
+    f = gaussian_fom(S, S, D, X, 0.12)  # N ~ 100
+    N = f.nodes.size
+    Q, _ = np.linalg.qr(np.random.default_rng(0).standard_normal((N, N)) + 1j * np.random.default_rng(1).standard_normal((N, N)))
+    rm = ReducedModel(f, Q)
+    mu = np.array([[0.7, 9.0, 11.0], [3.3, 12.0, 8.0], [6.1, 10.0, 10.0]])
+    t_fom = f.amplitudes(mu)[0]
+    for method in ("galerkin", "lspg"):
+        np.testing.assert_allclose(rm.amplitudes(mu, method, residual=False)[0], t_fom, atol=1e-10)
+    z = np.array([[0.95 - 0.01j, 10.0, 10.0]])
+    np.testing.assert_allclose(rm.amplitudes(z, residual=False)[0], f.amplitudes(z)[0], atol=1e-9)
+
+
+def test_pod_regression_never_uses_the_operator():
+    """POD coefficient regression must be a different method from Galerkin RB: it may read the
+    snapshots and extract t from wave-function values, but never assemble A(mu)."""
+    from qscatter.phase6.baselines import pod_regression
+
+    f = gaussian_fom(S, S, D, X, 0.05)
+    lo, hi = np.array([0.1, 8.0, 8.0]), np.array([10.0, 12.0, 12.0])
+    mu_tr, mu_te = sobol(16, lo, hi, 2), sobol(8, lo, hi, 3)
+    snaps = f.solve(mu_tr).T
+
+    class NoOperator:
+        observables = f.observables
+
+        def __getattr__(self, name):
+            raise AssertionError(f"POD regression accessed the operator ({name})")
+
+    t = pod_regression(NoOperator(), mu_tr, snaps, mu_te, lo, hi)
+    assert np.all(np.isfinite(t))
+    rm = ReducedModel(f, orthonormalize(snaps)[0])
+    assert np.max(np.abs(t - rm.amplitudes(mu_te, residual=False)[0])) > 1e-6  # genuinely different predictions
+
+
+def test_parametric_mlp_fails_loudly_when_training_diverges():
+    """Audit P2-MLPDIV: MLPParam raised UnboundLocalError when no validation loss was finite."""
+    from qscatter.parametric import MLPParam
+
+    rng = np.random.default_rng(0)
+    X = rng.uniform([0.2, 5.0, 0.3, 1.5], [5.0, 10.0, 0.7, 3.0], (64, 4))
+    t = np.exp(1j * X[:, 0])
+    with pytest.raises(FloatingPointError):
+        MLPParam(hidden=(8,), steps=250, seed=0).fit(X, t * np.nan, X[:8], t[:8] * np.nan)
