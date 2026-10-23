@@ -309,7 +309,7 @@ Python 3.11 and 3.12.
 
 ```bash
 python -m qscatter.quickstart      # ~30 s; also available as the command `qscatter-quickstart`
-python -m pytest -q                # 98 tests (Phases 1–7 and the audit)
+python -m pytest -q                # 101 tests (Phases 1–7 and the audit)
 ```
 
 The quickstart:
@@ -360,7 +360,7 @@ figures are written to `results/<experiment>/`. Times are approximate for a 4-co
 
 | command | purpose | time |
 |---|---|---|
-| `python -m pytest -q` | 98 unit, physics, regression and audit tests | ~2–3 min |
+| `python -m pytest -q` | 101 unit, physics, regression and audit tests | ~2–3 min |
 | `python scripts/reproduce_key_results.py` | recompute 17 headline numbers and compare them with the report; exits non-zero on mismatch (also runs in CI) | ~1–3 min |
 | `python scripts/audit.py` | independent audit, 10 checks: conservation, analytic/ODE agreement, leakage, counting, reproducibility | ~3–5 min |
 | `python scripts/benchmark_cost.py` | wall-clock benchmark (use an idle machine) | ~2–3 min |
@@ -479,7 +479,7 @@ of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, certified-bound and 
 - Separation of sample efficiency from real speed-up.
 
 **Software quality.**
-- 98 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
+- 101 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
   checkpoint provenance.
 
 **Resume summary.** Built a reproducible scientific-ML benchmark for reducing expensive quantum-scattering

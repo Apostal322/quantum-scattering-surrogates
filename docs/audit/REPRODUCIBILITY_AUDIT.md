@@ -39,7 +39,7 @@ Resolved versions: numpy 2.5.4, scipy 1.18.1, torch 2.14.1; the full list is in 
   did not have them.
 - **Absolute paths.** None found: scripts use `Path(__file__).parents[...]`.
 
-After the audit the suite has **100 tests** (86 + 14 in `tests/audit/`, about 10 s).
+After the audit the suite has **101 tests** (86 + 15 in `tests/audit/`, about 15 s).
 
 ## 2. CI
 

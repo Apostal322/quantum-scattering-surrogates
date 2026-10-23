@@ -21,7 +21,10 @@ P1 elements, h = 0.0025, N = 4331.
 2. **Projection RB generalises; data-driven surrogates do not (H2 confirmed against the
    baselines).** With three parameters (E, V_L, V_R; the space is one-dimensional), Galerkin RB reaches max |Δt| = 1.2e-9 on 1024 held-out points with 48 FEM
    solves, and 5.7e-4 with 24. RBF on t, POD regression and the MLP stay at max |Δt| ≈ 0.8–1.4
-   at every budget, the MLP up to 4096 training points. None of them resolves a single held-out
+   at every budget, the MLP up to 4096 training points. The audit showed the MLP was under-trained:
+   tuned on validation data (256 × 3, 10k epochs) it reaches a mean |ΔT| of 2.6–3.5e-3 instead of
+   9.1e-3, but its worst case stays 0.39–0.63, near narrow resonances, where it misses even its own
+   training points (`docs/audit/ML_EVALUATION_AUDIT.md`). None of them resolves a single held-out
    resonance.
 3. **Greedy sampling is not uniformly better than a Sobol design (contrary to a natural
    expectation).** Max |Δt| is similar for greedy and Sobol RB at n ≥ 20 (n = 24: 5.7e-4 vs
@@ -92,6 +95,14 @@ MLP on its own Sobol designs. Max |Δt| on the in-domain test: 0.87 / 0.78 / 0.7
 48 / 256 / 1024 / 4096 points. MAE of T: 4.3e-2 / 1.6e-2 / 9.2e-3 / 9.1e-3. On average the MLP
 beats the RBF (MAE T ≈ 5e-2), but it misses the narrow peaks. For comparison, RB Sobol's MAE of T
 is 2.0e-5 at n = 24.
+
+*Audit correction (2026-10-23).* These MLP rows come from a small search (width ≤ 128, 3,000
+epochs) and understate the MLP. A frozen, validation-only diagnostic (`results/phase7/mlp_diagnostic/`)
+selected 256 × 3 with 10,000 epochs. Over 3 seeds at 4,096 points it reaches mean |ΔT| 2.6–3.5e-3
+and max |Δt| 0.39–0.63. Errors near resonances are 17–31× larger than elsewhere, and the model misses
+its own training points on the peaks by 0.40–0.56. Concentrating half the data at the resonances
+(an oracle design) reduces the worst case only to 0.28–0.44. RBF on the same 4,096 points: mean
+2.2e-2. The qualitative conclusion is unchanged.
 
 Resonance scans (6 held-out height pairs, 18 resonances, 401-point ±20Γ windows around each FEM
 pole). A resonance counts as resolved if max |ΔT| ≤ 0.1 T_peak within ±2Γ:
