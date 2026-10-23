@@ -19,7 +19,7 @@ numbers suggest, and one inherited limitation of Phase 6. It is meant to be read
 - **Truncation.** The model solves the Gaussian potential truncated to [-X, X] with
   rel_cut = 1e-14. The truncation is measured to change t by less than 3e-13; it is not removed.
 
-## 2. The certified error bound
+## 2. The residual/σ_min error bound (called "certified" in code and data)
 
 - The bound ‖ψ̂ − ψ‖₂ ≤ ‖res‖₂ / σ_min(A(μ)) holds for the **Euclidean norm of the nodal vector**.
   It is not the H¹ or energy norm of the continuous problem, and it bounds the error with respect
@@ -46,7 +46,7 @@ numbers suggest, and one inherited limitation of Phase 6. It is meant to be read
   data from small grids. Larger searches, other architectures (Fourier features, pole-structured
   networks) and other training schemes could do better; we test one standard MLP, not neural
   surrogates in general.
-- **AAA in 1D only.** AAA and PCHIP are compared along fixed-height energy lines. A 3D rational
+- **AAA in 1D only.** AAA and PCHIP are compared along fixed-height energy lines. A three-parameter rational
   surrogate (e.g. parametric AAA, or pole matching across heights) was not built.
 - **Adaptive AAA rule.** The adaptive AAA design used here (maximum disagreement of consecutive
   fits) is one simple choice among several in the literature. RB greedy uses the residual, which
@@ -67,7 +67,7 @@ numbers suggest, and one inherited limitation of Phase 6. It is meant to be read
   idle. They do not transfer to other machines, and the Python overhead of single queries is part
   of what is measured.
 - **Seeds.** Noise and jitter studies use 5 seeds and report medians and worst cases, without
-  confidence intervals. The 3D random-design RB rows use 3 seeds.
+  confidence intervals. The three-parameter random-design RB rows use 3 seeds.
 
 ## 5. Inherited limitation of Phase 6 (not repeated in Phase 7)
 

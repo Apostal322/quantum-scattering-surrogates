@@ -200,9 +200,15 @@ class AffineFOM:
         tridiagonal A, and LAPACK's banded eigensolver returns the smallest non-negative eigenvalue
         with absolute error <= c * eps * ||A|| (backward stability + Weyl), i.e. no ||A||^2 term.
 
-        certified=True subtracts the conservative margin 2n * eps * ||A||_1 (>= the backward-error
-        bound), so the returned value is a lower bound for sigma_min in floating point; 1/sigma
-        is then an upper bound for ||A^-1|| and res/sigma a certified bound for ||e||.
+        certified=True subtracts the safety margin 2m * eps * ||A||_1 (m = 2n). LAPACK guarantees an
+        error <= p(m) * eps * ||A||_2 with an unspecified modest p(m) and ||A||_2 <= ||A||_1 here
+        (A is complex symmetric), so the margin is a heuristic choice p(m) = 2m, not a proof; no
+        interval arithmetic is used. Measured against dense SVD the uncorrected value is accurate to
+        <= 1.4e-8 relative and the margin keeps it below the SVD value (audit, 2026-10). The name is
+        kept for compatibility with stored results: res/sigma is an a-posteriori error bound that
+        is exact in exact arithmetic and evaluated in floating point, not a computer-verified
+        certificate. Cost: one banded eigenproblem of size 2n per parameter (~2 s for n = 4331),
+        i.e. thousands of FEM solves, so it is a validation tool rather than an online estimator.
         """
         from scipy.linalg import eigvals_banded
 

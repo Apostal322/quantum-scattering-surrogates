@@ -84,7 +84,7 @@ def section_validation(d, out):
 def section_generalization(d, out):
     rows = d["rows"]
     budgets = sorted({r["n"] for r in rows})
-    out += ["## B/C. Generalisation and fair comparison (3D: E, V_L, V_R)", "",
+    out += ["## B/C. Generalisation and fair comparison (three parameters E, V_L, V_R; 1D space)", "",
             f"FOM: {d['fom']['nodes']} nodes, h = {d['fom']['h']}, X = {d['fom']['X']}. RBF kernel chosen on validation: "
             f"**{d['rbf_kernel']}** (validation RMSE of t: " + ", ".join(f"{k} {e(v)}" for k, v in d["rbf_kernel_validation"].items()) + ").",
             f"Data-driven baselines on the pre-declared design `{d['manifest']['baseline_design']}` only.", ""]
@@ -125,9 +125,9 @@ def section_generalization(d, out):
         out.append(f"| {t['n_rect']} | {t['n_gauss']} | {t['r']} | {e(r['test']['max_abs_dt'])} | {e(r['test_ood']['max_abs_dt'])} | {e(r['scans_test']['recall'], '{:.2f}')} |")
     pw = d["power_iteration_vs_exact_inverse_norm"]
     out += ["", "## E. Residual reliability (greedy RB)", "",
-            "Certified bound: ‖e_ψ‖ ≤ ‖res‖ / σ_min(A), σ_min from the banded Golub–Kahan eigenproblem minus a "
+            "A-posteriori bound (exact in exact arithmetic, evaluated in floating point; called `certified` in the data): ‖e_ψ‖ ≤ ‖res‖ / σ_min(A), σ_min from the banded Golub–Kahan eigenproblem minus a heuristic "
             "floating-point margin. Power iteration (Phase 6) gives a *lower* estimate of ‖A⁻¹‖: "
-            f"its product with the certified σ_min ranges over [{pw['min_ratio_lower_over_exact']:.6f}, {pw['max_ratio_lower_over_exact']:.6f}], "
+            f"its product with the margin-corrected σ_min ranges over [{pw['min_ratio_lower_over_exact']:.6f}, {pw['max_ratio_lower_over_exact']:.6f}], "
             "so it cannot serve as a bound.", "",
             "| n | points | Spearman(res, ‖e_ψ‖) | Spearman(res, abs e_t) | bound holds (ψ) | bound holds (t)* | median bound/‖e_ψ‖ | median bound/abs e_t |",
             "|---|---|---|---|---|---|---|---|"]
@@ -167,7 +167,7 @@ def section_generalization(d, out):
         lim = [min(a.get_xlim()[0], a.get_ylim()[0]), max(a.get_xlim()[1], a.get_ylim()[1])]
         a.loglog(lim, lim, "--", color=INK2, label="bound = error")
         a.set_xlabel("true error ‖ψ̂ − ψ‖")
-        a.set_ylabel("certified bound ‖res‖ / σ_min")
+        a.set_ylabel("a-posteriori bound ‖res‖ / σ_min")
         a.set_title(lab)
         a.legend(fontsize=8)
     fig.savefig(FIG / "E_certified_bound.png")

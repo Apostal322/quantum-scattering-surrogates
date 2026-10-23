@@ -99,9 +99,12 @@ of $T(E)$ on a dense, resonance-resolved reference grid.
      error.
    - Instability when there are too few points for the number of poles.
    - The greedy self-stopping rule stopped too early once with 10⁻⁴ noise.
-7. **In 4D parameter space the MLP is the best generic method**, at 3.5·10⁻³. Fourier features and dissipative
-   pretraining did not help. A **physics-informed hybrid** (learned single-barrier S-matrix + exact composition) is
-   2–3 orders of magnitude better.
+7. **In the four-parameter problem (E, V₀, a, d) the MLP is the best generic method**, at 3.5·10⁻³ (the space is
+   still one-dimensional). Fourier features and dissipative pretraining did not help. A **structure-exploiting
+   hybrid** (single-barrier S-matrix interpolated by tensor-grid cubic splines, not a neural network, plus exact
+   composition) is 2–3 orders of magnitude better; it uses the known split into two barriers and free propagation,
+   which no other method is given. With the strict peak-relative criterion the MLP resolves 61–62/68 held-out
+   resonances (not 66–68/68 as first reported; see `docs/audit/ISSUE_REGISTER.md`).
 8. **Fewer solver calls ≠ faster.** With a fast solver no surrogate wins. With a 4.4 ms/call ODE solver, 30 points +
    AAA is **670–700× faster** than a direct 20,001-point scan (two measured runs). The MLP gains only 2.6–3.9×,
    because training cost dominates.
@@ -179,7 +182,7 @@ Engineering details:
 - The optimiser plateaus near 10⁻⁴.
 - The data are noise-free, which favours interpolation.
 
-**Why it wins among generic methods in 4D.** Resonance ridges curve through parameter space, which defeats tensor
+**Why it wins among generic methods in the four-parameter problem.** Resonance ridges curve through parameter space, which defeats tensor
 grids and stationary kernels.
 
 ## 7. AAA rational approximation and adaptive sampling
@@ -305,7 +308,7 @@ Python 3.11 and 3.12.
 
 ```bash
 python -m qscatter.quickstart      # ~30 s; also available as the command `qscatter-quickstart`
-python -m pytest -q                # 75 tests
+python -m pytest -q                # 98 tests (Phases 1–7 and the audit)
 ```
 
 The quickstart:
@@ -356,7 +359,7 @@ figures are written to `results/<experiment>/`. Times are approximate for a 4-co
 
 | command | purpose | time |
 |---|---|---|
-| `python -m pytest -q` | 57 unit, physics and regression tests | ~30 s |
+| `python -m pytest -q` | 98 unit, physics, regression and audit tests | ~2–3 min |
 | `python scripts/reproduce_key_results.py` | recompute 17 headline numbers and compare them with the report; exits non-zero on mismatch (also runs in CI) | ~1–3 min |
 | `python scripts/audit.py` | independent audit, 10 checks: conservation, analytic/ODE agreement, leakage, counting, reproducibility | ~3–5 min |
 | `python scripts/benchmark_cost.py` | wall-clock benchmark (use an idle machine) | ~2–3 min |
@@ -380,7 +383,7 @@ qscatter/                      Python package
     analytic.py, ode_solver.py textbook formulas; independent DOP853 solver
     resonances.py, poles.py    peaks and FWHM; exact complex poles
   surrogates/                  baselines.py (interpolation, GP), rational.py (AAA), mlp.py (PyTorch)
-  parametric.py                4D surrogates: tensor spline, RBF, GP, MLP, Fourier MLP, POD+MLP, hybrid
+  parametric.py                four-parameter surrogates: tensor spline, RBF, GP, MLP, Fourier MLP, POD+MLP, hybrid
   experiments/                 drivers for Experiments 1–5
   phase6/                      Phase 6: FEM full-order model, reduced basis (Galerkin/LSPG), greedy, baselines
   phase7/                      Phase 7: smooth-potential FEM, poles, protocol, validation, generalisation, robustness
@@ -400,7 +403,7 @@ docs/                          coursework report, English report, supervisor and
 * **AAA and rational approximation are established methods,** not contributions of this project. The project
   evaluates them systematically for scattering amplitudes and measures their limits.
 * **The best method depends on the task.** AAA wins for 1D energy scans of a fixed system. The MLP is the best generic
-  method in 4D. The structure-exploiting hybrid wins when the block decomposition is known.
+  method for the four-parameter problem. The structure-exploiting hybrid wins when the block decomposition is known.
 * **Machine learning did not beat classical methods in 1D.** This holds for the tested architectures and is not a
   general statement about neural networks.
 * **Fewer solver calls do not automatically mean faster computation.** It depends on the cost per call relative to
@@ -460,7 +463,7 @@ of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, certified-bound and 
   search.
 
 **Surrogate modeling and PyTorch.**
-- MLPs, Fourier features, POD, transfer learning, a physics-informed hybrid.
+- MLPs, Fourier features, POD, transfer learning, a structure-exploiting hybrid (interpolated S-matrix blocks).
 - Interpolation, Gaussian processes and rational baselines, all compared under equal simulation budgets.
 
 **Evaluation methodology.**
@@ -475,7 +478,7 @@ of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, certified-bound and 
 - Separation of sample efficiency from real speed-up.
 
 **Software quality.**
-- 75 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
+- 98 tests, an audit script, automated reproduction of the headline numbers, ruff, CI on two operating systems, and
   checkpoint provenance.
 
 **Resume summary.** Built a reproducible scientific-ML benchmark for reducing expensive quantum-scattering
@@ -484,7 +487,8 @@ approximation and PyTorch surrogates under equal simulation budgets showed:
 
 - a physics-motivated representation cut the simulations required to recover narrow resonances by 1–3 orders of
   magnitude compared with the other methods tested;
-- in 4D, a physics-informed hybrid outperformed a generic MLP by 2–3 orders of magnitude;
+- in a four-parameter problem, a structure-exploiting hybrid (interpolated single-barrier S-matrix + exact
+  composition) outperformed a generic MLP by 2–3 orders of magnitude;
 - on an expensive solver the pipeline was measured end to end at 670–700× faster than a direct scan.
 
 ## 15. Author and citation

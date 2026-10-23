@@ -216,7 +216,7 @@ def run_generalization(cfg: dict) -> dict[str, Any]:
         transfer.append({"n_rect": nr0, "n_gauss": m_extra, "r": int(V.shape[1]),
                          "result": evaluate(lambda mm: rm.amplitudes(mm, residual=False)[0])})
 
-    # ---------------- E: residual reliability with a certified bound (greedy bases)
+    # ---------------- E: residual reliability with the residual/sigma_min a-posteriori bound (greedy bases)
     eff = []
     sub = sp.test[: cfg["n_effectivity"]]
     psi_sub = fom.solve(sub)

@@ -1,5 +1,10 @@
 # Phase 7 research plan: independent validation, generalisation, novelty
 
+> **Audit note (2026-10-23).** This plan is kept as written before the results (pre-registration).
+> Two of its terms are corrected elsewhere: "3D" means three *parameters* (E, V_L, V_R) of a
+> one-dimensional problem, and the "certified" bound is an a-posteriori bound evaluated in floating
+> point, not a computer-verified certificate (`docs/audit/ISSUE_REGISTER.md`, P1-CERT, P2-3D).
+
 **Status:** written on 2026-10-20, after the solver and the protocol code were built and before any
 test-set result of Experiments B–F had been looked at. Preliminary convergence checks of the
 Experiment A kind were used to choose the mesh (h = 0.0025) and the domain (X = 5.4125). They are

@@ -19,7 +19,7 @@ P1 elements, h = 0.0025, N = 4331.
    2e-5 relative. Every resonance is a pole that is stable under mesh refinement, domain growth
    and energy-grid refinement; no artefacts were found.
 2. **Projection RB generalises; data-driven surrogates do not (H2 confirmed against the
-   baselines).** In 3D, Galerkin RB reaches max |Δt| = 1.2e-9 on 1024 held-out points with 48 FEM
+   baselines).** With three parameters (E, V_L, V_R; the space is one-dimensional), Galerkin RB reaches max |Δt| = 1.2e-9 on 1024 held-out points with 48 FEM
    solves, and 5.7e-4 with 24. RBF on t, POD regression and the MLP stay at max |Δt| ≈ 0.8–1.4
    at every budget, the MLP up to 4096 training points. None of them resolves a single held-out
    resonance.
@@ -30,18 +30,28 @@ P1 elements, h = 0.0025, N = 4331.
 4. **Extrapolation (H3).** RB loses about a factor of 3 OOD at intermediate budgets (n = 24:
    2.0e-3 vs 5.7e-4) and nothing at n = 48 (8.0e-10). The MLP's mean error grows 13× OOD (MAE of
    T 9.1e-3 → 0.16).
-5. **Basis transfer works better than expected (H4 partly refuted).** A basis built only from
-   rectangular-barrier snapshots reaches max |Δt| = 1.2e-4 on the Gaussian test set with 48
-   snapshots, which is the FEM's own discretisation error, and 1.6e-5 with 96. It needs about
-   twice the size of a native basis. Adding 8 Gaussian greedy snapshots gives 1.5e-7.
+5. **Basis transfer works better than expected (H4 partly refuted), but saves nothing unless
+   rectangular snapshots already exist.** A basis built only from rectangular-barrier snapshots
+   reaches max |Δt| = 1.2e-4 on the Gaussian test set with 48 snapshots, which is the FEM's own
+   discretisation error, and 1.6e-5 with 96. A rectangular snapshot costs the same FEM solve as a
+   Gaussian one, and a native Gaussian basis reaches 3.9e-6 with 32 and 1.2e-9 with 48 solves, so
+   computing rectangular snapshots for transfer is never cheaper here. Transfer pays only when a
+   rectangular snapshot set is already available: then 0 Gaussian solves give 1.2e-4, and 8 give
+   1.5e-7 (audit correction, P1-B3).
 6. **Basis size tracks the number of resonances, not their width (H5 confirmed).** At fixed
    geometry, every additional resonance in the energy window costs about 1.5–3 basis functions.
    Making the narrowest resonance 160× narrower costs at most one. The attainable accuracy in
    double precision is about 5e-11/Γ_min (constant within a factor of 3 across 19 geometries).
-7. **The certified bound always holds and is loose near resonances (H6 confirmed).** The bound
+7. **The residual/σ_min a-posteriori bound always held and is loose near resonances (H6 confirmed).**
+   It is exact in exact arithmetic and was evaluated in floating point (σ_min with a heuristic
+   safety margin, the residual without a rounding bound), so it is not a computer-verified
+   certificate; the data call it `certified` (audit correction, P1-CERT). Each evaluation needs a
+   full-order eigenproblem (≈ 2 s, i.e. thousands of FEM solves). The bound
    res/σ_min held on 100 % of 326 points × 4 bases. It overestimates ‖e_ψ‖ by a median 28–57× on
    random points and 95–400× within ±2Γ of resonances; for t the factors are 10³–10⁵. The
-   power-iteration estimate of ‖A⁻¹‖ is up to 3.4 % too small, so it cannot certify.
+   power-iteration estimate of ‖A⁻¹‖ is up to 3.4 % too small, so it cannot serve as a bound. The
+   audit re-checked the bound down to the round-off floor (bases of 24–60 functions, errors down to
+   3e-11): it held with a margin of at least 22× (`tests/audit`).
 8. **One energy line.** RB reaches the floor (about 7e-8) with 16 queries per scan, adaptive AAA
    with 24 and uniform AAA with about 48. PCHIP fails at all budgets up to 64. This ordering is
    expected, because Galerkin RB on a line is itself a rational function of k.
@@ -62,7 +72,7 @@ P1 elements, h = 0.0025, N = 4331.
 
 Details are in `PHASE7_NUMERICAL_VALIDATION.md`.
 
-## B/C. 3D generalisation and fair comparison
+## B/C. Three-parameter generalisation and fair comparison
 
 Data-driven baselines use the pre-declared Sobol design only. RB is shown for every design. The
 RBF kernel (linear) and the MLP width and learning rate were chosen on validation data.
@@ -160,7 +170,8 @@ therefore unreachable in double precision for Γ_min below roughly 5e-5 and 4e-3
 - The residual ranks errors well on random points. It ranks them poorly within ±2Γ of resonances,
   where 1/σ_min varies by orders of magnitude.
 - The bound is an a-posteriori certificate in the Euclidean nodal norm, with σ_min computed at
-  full order. It is not an online-efficient certified-RB bound.
+  full order. It is not an online-efficient certified-RB bound, and it is not computer-verified
+  (no rounding analysis of the residual; heuristic eigensolver margin).
 
 ## F. Robustness
 
@@ -214,7 +225,7 @@ One thread on an Intel Xeon @ 2.1 GHz, N = 4331. One other single-thread job was
 
 | Phase 6 claim (rectangular barriers) | Phase 7 (Gaussian barriers, leakage-free protocol) | Verdict |
 |---|---|---|
-| RB reaches ≈ 2e-9 in 3D with 24 FEM solves, for any design | 24 solves give 5.7e-4; reaching 1.2e-9 takes 48. Any design works (greedy ≈ Sobol ≈ random) | **confirmed qualitatively, weakened quantitatively** (about 2× more snapshots on this problem) |
+| RB reaches ≈ 2e-9 with three parameters with 24 FEM solves, for any design | 24 solves give 5.7e-4; reaching 1.2e-9 takes 48. Any design works (greedy ≈ Sobol ≈ random) | **confirmed qualitatively, weakened quantitatively** (about 2× more snapshots on this problem) |
 | RBF on t and POD regression stay at errors ≈ 1 | the same (≈ 0.8–1.4), now without test-set design selection, plus an MLP that also fails on peaks | **confirmed**, and the Phase 6 selection bias is removed |
 | 1D: RB needs 10 solves and AAA 20 (its greedy) | RB 16, adaptive AAA 24, uniform AAA ≈ 48 | **confirmed in kind** |
 | Basis size nearly independent of resonance width, ≈ +1 per resonance (confounded with well length) | deconfounded: +1.5–3 per resonance at fixed geometry; width ×160 costs ≤ 1 function; width sets a precision floor ≈ 5e-11/Γ_min | **confirmed, refined** |
