@@ -32,8 +32,13 @@ from qscatter.phase7.fom import gaussian_fom
 from qscatter.phase7.protocol import make_splits
 
 
-def secant_pole(inv_t: Callable[[complex], complex], guess: complex, step_tol: float = 1e-11, maxiter: int = 60) -> complex:
-    """Root of a (surrogate's) 1/t(E) near `guess`; returns the best iterate."""
+def secant_pole(inv_t: Callable[[complex], complex], guess: complex, step_tol: float = 1e-11, maxiter: int = 60,
+                depth: float = 1e-5) -> complex | None:
+    """Root of a (surrogate's) 1/t(E) near `guess`, or None if no root was reached.
+
+    The best iterate is accepted only if Im z < 0 and |1/t(z)| < depth * |1/t(Re z)| (the same
+    scale-free pole test as `AffineFOM.find_pole`), so a stalled iteration is never reported as a pole.
+    """
     z0 = complex(guess)
     z1 = z0 + 1e-6 * max(1.0, abs(z0))
     f0, f1 = inv_t(z0), inv_t(z1)
@@ -47,7 +52,10 @@ def secant_pole(inv_t: Callable[[complex], complex], guess: complex, step_tol: f
             best = (abs(f1), z1)
         if abs(z1 - z0) < step_tol * max(1.0, abs(z1)):
             break
-    return best[1]
+    f_best, z = best
+    if not (z.imag < 0 and z.real > 0):
+        return None
+    return z if f_best < depth * abs(inv_t(complex(z.real, 0.0))) else None
 
 
 def _aaa(E: np.ndarray, t: np.ndarray):
@@ -137,7 +145,7 @@ def run_slice1d(cfg: dict) -> dict[str, Any]:
                 if name == "rb_greedy":
                     def inv(z, rm=rm, hh=heights):
                         return 1.0 / rm.amplitudes(np.array([[z, hh[0], hh[1]]], complex), residual=False)[0][0]
-                    ph = [secant_pole(inv, complex(z.real, 0.5 * z.imag)) for z in sc.poles]
+                    ph = [p for p in (secant_pole(inv, complex(z.real, 0.5 * z.imag)) for z in sc.poles) if p is not None]
                 elif raw_poles is not None:
                     ph = [p for p in raw_poles if p.imag < 0 and E_range[0] - 1 < p.real < E_range[1] + 1]
                 else:

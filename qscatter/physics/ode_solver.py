@@ -113,13 +113,19 @@ def ode_energy_scan(energies, potential, **kw):
 def solve_ode_smooth(E: float, V, x_lo: float, x_hi: float, rtol: float = 1e-11, atol: float = 1e-14) -> ODEResult:
     """Direct integration for a smooth callable V(x) assumed zero outside [x_lo, x_hi].
 
-    Used to validate the staircase (many thin layers) representation of a smooth potential.
+    Used to validate the staircase (many thin layers) representation of a smooth potential, and as
+    the independent reference of the Phase 7 finite-element model. Raises instead of returning an
+    unconverged result.
     """
+    if not E > 0:
+        raise ValueError("E must be positive")
     k = np.sqrt(E)
     psi0 = np.exp(1j * k * x_hi)
     y = np.array([psi0.real, psi0.imag, (1j * k * psi0).real, (1j * k * psi0).imag])
     rhs = lambda x, u: np.array([u[2], u[3], (V(x) - E) * u[0], (V(x) - E) * u[1]])
     sol = solve_ivp(rhs, (x_hi, x_lo), y, method="DOP853", rtol=rtol, atol=atol)
+    if not sol.success:
+        raise RuntimeError(f"ODE integration failed at E = {E}: {sol.message}")
     u = sol.y[:, -1]
     psi, dpsi = u[0] + 1j * u[1], u[2] + 1j * u[3]
     A = 0.5 * (psi + dpsi / (1j * k)) * np.exp(-1j * k * x_lo)
