@@ -13,11 +13,11 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from qscatter.phase6.experiments import provenance  # noqa: E402
-from qscatter.phase7 import basis, robustness, slice1d  # noqa: E402
+from qscatter.phase7 import basis, mlp_diagnostic, robustness, slice1d  # noqa: E402
 from qscatter.phase7 import experiments as ex  # noqa: E402
 from qscatter.phase7.validation import run_validation  # noqa: E402
 
-RUNNERS = {"validation": run_validation, **ex.RUNNERS, **slice1d.RUNNERS, **basis.RUNNERS, **robustness.RUNNERS}
+RUNNERS = {"validation": run_validation, **ex.RUNNERS, **slice1d.RUNNERS, **basis.RUNNERS, **robustness.RUNNERS, **mlp_diagnostic.RUNNERS}
 
 if __name__ == "__main__":
     name = sys.argv[1]
