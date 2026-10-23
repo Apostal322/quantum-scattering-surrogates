@@ -85,7 +85,7 @@ Pole shift when the domain grows (rel_cut × 1e-2): 7.2e-07, 4.9e-06, 1.5e-05
 | 100000 | 9.90e-05 | 3 | 3 / 3 |
 
 <!-- generalization: commit 2a57273, modified since commit: False, wall 1341 s -->
-## B/C. Generalisation and fair comparison (3D: E, V_L, V_R)
+## B/C. Generalisation and fair comparison (three parameters E, V_L, V_R; 1D space)
 
 FOM: 4331 nodes, h = 0.0025, X = 5.4125. RBF kernel chosen on validation: **linear** (validation RMSE of t: thin_plate_spline 2.3e-01, cubic 2.8e-01, quintic 3.9e-01, linear 2.1e-01).
 Data-driven baselines on the pre-declared design `sobol` only.
@@ -211,7 +211,7 @@ Data-driven baselines on the pre-declared design `sobol` only.
 
 ## E. Residual reliability (greedy RB)
 
-Certified bound: ‖e_ψ‖ ≤ ‖res‖ / σ_min(A), σ_min from the banded Golub–Kahan eigenproblem minus a floating-point margin. Power iteration (Phase 6) gives a *lower* estimate of ‖A⁻¹‖: its product with the certified σ_min ranges over [0.966215, 0.999998], so it cannot serve as a bound.
+A-posteriori bound (exact in exact arithmetic, evaluated in floating point; called `certified` in the data): ‖e_ψ‖ ≤ ‖res‖ / σ_min(A), σ_min from the banded Golub–Kahan eigenproblem minus a heuristic floating-point margin. Power iteration (Phase 6) gives a *lower* estimate of ‖A⁻¹‖: its product with the margin-corrected σ_min ranges over [0.966215, 0.999998], so it cannot serve as a bound.
 
 | n | points | Spearman(res, ‖e_ψ‖) | Spearman(res, abs e_t) | bound holds (ψ) | bound holds (t)* | median bound/‖e_ψ‖ | median bound/abs e_t |
 |---|---|---|---|---|---|---|---|
