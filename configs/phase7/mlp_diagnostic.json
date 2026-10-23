@@ -8,5 +8,6 @@
   "pole_grid": 7,
   "near_factor": 10.0,
   "rbf_kernels": ["thin_plate_spline", "cubic", "linear"],
-  "seed_resonance_design": 401
+  "seed_resonance_design": 401,
+  "processes": 4
 }

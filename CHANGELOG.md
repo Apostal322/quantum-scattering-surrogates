@@ -3,6 +3,29 @@
 All results are kept in the repository history. This file summarises the main stages, including corrections of
 earlier, wrong conclusions.
 
+## Audit (2026-10-23, branch `research/phase7-independent-validation`)
+
+Independent scientific, numerical, ML and reproducibility audit; details in `docs/audit/`.
+
+- **No blocking (P0) error found.** Physics re-validated against a new independent matching
+  solver, the analytic Born limit, metamorphic relations and an independent pole computation.
+- **Corrections of overstated claims (P1):**
+  - the Phase 7 "certified" bound is an a-posteriori bound evaluated in floating point;
+  - the Phase 6 power-iteration bound was not rigorous;
+  - the Experiment 4 "resonances found" metric was lenient (strict count: MLP 61–62/68, spline 26/68);
+  - the hybrid is interpolation plus exact composition, not a learned model;
+  - rectangular → Gaussian transfer brings no saving unless rectangular snapshots already exist;
+  - "3D" meant three parameters.
+- **Code fixes (P2):**
+  - the ODE reference now fails loudly;
+  - surrogate pole search verifies roots;
+  - MLP divergence raises explicit errors.
+- **Further changes:**
+  - bibliography corrected;
+  - CI extended to Python 3.10 and 3.13;
+  - 15 audit regression tests;
+  - MLP failure diagnostic.
+
 ## Unreleased: repository publication
 
 - Professional README, figure gallery, experiment, reproducibility and provenance documentation.
