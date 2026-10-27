@@ -1,6 +1,6 @@
 # Quantum Scattering Surrogates
 
-**Physics-informed surrogate modeling and adaptive sampling for quantum resonance reconstruction**
+**Physics-motivated surrogate modeling and adaptive sampling for quantum resonance reconstruction**
 
 [![CI](https://github.com/Apostal322/quantum-scattering-surrogates/actions/workflows/ci.yml/badge.svg)](https://github.com/Apostal322/quantum-scattering-surrogates/actions/workflows/ci.yml)
 
@@ -148,7 +148,7 @@ out-of-domain configurations (right) as a function of the simulation budget.
 | Classical baselines | `qscatter/surrogates/baselines.py` | Linear, PCHIP, cubic spline, Gaussian process with likelihood-selected kernel. |
 | Rational | `qscatter/surrogates/rational.py` | AAA (`scipy.interpolate.AAA`) of $t$ as a function of $k$, with spurious-pole filtering. |
 | Neural | `qscatter/surrogates/mlp.py`, `qscatter/parametric.py` | PyTorch MLPs; Fourier features; POD+MLP; dissipative pretraining. |
-| Hybrid | `qscatter/parametric.py` (`HybridSMatrix`) | Learned single-barrier $(t_b, r_b)(E,V_0,a)$ plus exact composition $t=t_bPt_b/(1-r_b^2P^2)$, $P=e^{ikd}$. |
+| Hybrid | `qscatter/parametric.py` (`HybridSMatrix`) | Single-barrier $(t_b, r_b)(E,V_0,a)$ interpolated by tensor-grid cubic splines (not a neural network) plus exact composition $t=t_bPt_b/(1-r_b^2P^2)$, $P=e^{ikd}$. |
 | Adaptive sampling | `qscatter/experiments/adaptive.py`, `robustness.py` | Segment splitting by T, log T or t; GP variance; ensemble disagreement; greedy rational sampling. |
 
 **Validation of the solver:**
@@ -165,7 +165,7 @@ out-of-domain configurations (right) as a function of the simulation budget.
 | model | architecture | training |
 |---|---|---|
 | 1D surrogate, $E \to (\mathrm{Re}\,t, \mathrm{Im}\,t)$ | MLP 1 → 64 → 64 → 2, SiLU, float64 | Full-batch Adam, lr 10⁻² with cosine decay to 10⁻⁵, up to 20k epochs. Low-data protocol: interleaved validation points, early stopping, then a refit on all points. An ablation without early stopping is in `results/exp1_mlp_no_es/`. |
-| 4D surrogate, $(E,V_0,a,d) \to t$ | MLP 4 → 128 → 128 → 128 → 2, SiLU, float32 | Minibatch Adam (1024), 20k steps, cosine schedule; best checkpoint on held-out configurations. |
+| Four-parameter surrogate, $(E,V_0,a,d) \to t$ | MLP 4 → 128 → 128 → 128 → 2, SiLU, float32 | Minibatch Adam (1024), 20k steps, cosine schedule; best checkpoint on held-out configurations. |
 | Fourier-feature MLP | $[\sin 2\pi Bx, \cos 2\pi Bx]$, $B\sim\mathcal N(0,\sigma^2)$ (Tancik et al., 2020) | σ selected on validation data only. |
 | POD + MLP | SVD of the training scans; MLP for the reduced coefficients | Compression error reported separately from coefficient error. |
 | Dissipative pretraining | Pretrain with an absorbing well $V=-iW$, then fine-tune | Half of the budget is spent on lossy data, so the comparison is fair (idea from Nam et al.). |
@@ -445,9 +445,9 @@ reduced-basis experiment on the project's own validated physics.
 | [`docs/PHASE6_NOVELTY_ASSESSMENT.md`](docs/PHASE6_NOVELTY_ASSESSMENT.md) | established vs. reproduced vs. new, and what still needs verification |
 | [`results/phase6/SUMMARY.md`](results/phase6/SUMMARY.md) | generated tables (`scripts/phase6/analyze.py`) |
 
-**Phase 7 (research branch `research/phase7-independent-validation`, under review; not part of the report).** Independent
+**Phase 7 and independent audit (merged via PR #3; selected results in section 10.12 of the Russian report, full analysis in the documents below).** Independent
 validation on a smooth double-Gaussian barrier, out-of-domain and cross-family generalisation, a leakage-free comparison
-of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, certified-bound and robustness studies.
+of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, a-posteriori error-bound and robustness studies.
 
 | document | content |
 |---|---|
@@ -456,6 +456,7 @@ of RB, POD regression, RBF, MLP, AAA and PCHIP, basis-size, certified-bound and 
 | [`docs/PHASE7_NUMERICAL_VALIDATION.md`](docs/PHASE7_NUMERICAL_VALIDATION.md) | FEM vs ODE and exact S-matrix, convergence, resonance artefact checks |
 | [`docs/PHASE7_NOVELTY_ASSESSMENT.md`](docs/PHASE7_NOVELTY_ASSESSMENT.md) · [`docs/PHASE7_LIMITATIONS.md`](docs/PHASE7_LIMITATIONS.md) | prior work, what may and may not be claimed; caveats |
 | [`results/phase7/SUMMARY.md`](results/phase7/SUMMARY.md) | generated tables (`scripts/phase7/analyze.py`) |
+| [`docs/audit/FINAL_AUDIT_RU.md`](docs/audit/FINAL_AUDIT_RU.md) · [`docs/audit/ISSUE_REGISTER.md`](docs/audit/ISSUE_REGISTER.md) | independent audit (2026-10): findings, corrections, reproducibility, ML diagnostic, novelty |
 
 ### Skills demonstrated
 

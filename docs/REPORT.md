@@ -262,7 +262,7 @@ universal, so we report the measured map rather than a law.
 
 Median test RMSE(T), median over 3 seeds:
 
-| method | B = 2,048 | B = 8,192 | B = 32,768 | resonances found (32k) | OOD (32k) |
+| method | B = 2,048 | B = 8,192 | B = 32,768 | resonances found (32k; lenient rule, strict counts below) | OOD (32k) |
 |---|---|---|---|---|---|
 | tensor-grid cubic | 2.0e-1 | 9.8e-2 | 4.6e-2 | 56/68 | 1.2e-1 |
 | RBF (thin plate) | 1.7e-1 | 1.2e-1 | 8.0e-2 | 43/68 | 1.5e-1 |

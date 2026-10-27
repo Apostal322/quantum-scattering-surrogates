@@ -31,7 +31,7 @@ P1 elements, h = 0.0025, N = 4331.
    6.3e-4; n = 32: 3.9e-6 vs 8.7e-6). Greedy helps the resonance metrics at small n: at n = 16
    recall is 1.00 vs 0.61. Galerkin is more accurate than LSPG at every budget.
 4. **Extrapolation (H3).** RB loses about a factor of 3 OOD at intermediate budgets (n = 24:
-   2.0e-3 vs 5.7e-4) and nothing at n = 48 (8.0e-10). The MLP's mean error grows 13× OOD (MAE of
+   2.0e-3 vs 5.7e-4) and nothing at n = 48 (8.0e-10). The MLP's mean error (original, untuned configuration) grows 13× OOD (MAE of
    T 9.1e-3 → 0.16).
 5. **Basis transfer works better than expected (H4 partly refuted), but saves nothing unless
    rectangular snapshots already exist.** A basis built only from rectangular-barrier snapshots
