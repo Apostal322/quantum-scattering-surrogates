@@ -1,0 +1,12 @@
+{
+  "name": "validation",
+  "description": "Experiment A: smooth double-Gaussian barrier V = VL exp(-(x+d/2)^2/s^2) + VR exp(-(x-d/2)^2/s^2); ODE tolerance, domain truncation, mesh and energy-grid convergence, pole stability.",
+  "s": 0.6, "d": 4.0, "E_range": [0.1, 10.0],
+  "heights": [[10.0, 10.0], [14.0, 14.0], [8.0, 14.0]],
+  "n_check_energies": 60,
+  "ode_rtol": 1e-12, "ode_rtol_check": [1e-8, 1e-10, 1e-11],
+  "rel_cut": 1e-14, "rel_cuts": [1e-4, 1e-6, 1e-8, 1e-10, 1e-12, 1e-14, 1e-16],
+  "meshes": [0.02, 0.01, 0.005, 0.0025, 0.00125, 0.000625],
+  "h_ref": 0.0025,
+  "energy_grids": [1000, 5000, 20000, 100000]
+}

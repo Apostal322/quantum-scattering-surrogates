@@ -60,7 +60,9 @@ An independent audit with 10 checks passes, including a leakage test with a pois
      competitive in higher dimension.
    - Fourier features and dissipative pretraining did **not** improve it.
    - A structure-exploiting hybrid is 2–3 orders of magnitude more accurate (4.5·10⁻⁵ at 2k evaluations):
-     it learns only the smooth single-barrier S-matrix and composes the double barrier exactly.
+     it interpolates (tensor-grid cubic splines, no neural network) only the smooth single-barrier S-matrix and
+     composes the double barrier exactly. It is given the block structure of the potential, which no other method
+     receives.
    - If each new configuration can be computed on demand, AAA needs only 16 evaluations per configuration
      (6·10⁻¹⁰).
 7. **Independent stress test on 27 unseen systems.** These are asymmetric barriers, coupled-well doublets,
@@ -260,7 +262,7 @@ universal, so we report the measured map rather than a law.
 
 Median test RMSE(T), median over 3 seeds:
 
-| method | B = 2,048 | B = 8,192 | B = 32,768 | resonances found (32k) | OOD (32k) |
+| method | B = 2,048 | B = 8,192 | B = 32,768 | resonances found (32k; lenient rule, strict counts below) | OOD (32k) |
 |---|---|---|---|---|---|
 | tensor-grid cubic | 2.0e-1 | 9.8e-2 | 4.6e-2 | 56/68 | 1.2e-1 |
 | RBF (thin plate) | 1.7e-1 | 1.2e-1 | 8.0e-2 | 43/68 | 1.5e-1 |
@@ -269,13 +271,13 @@ Median test RMSE(T), median over 3 seeds:
 | **MLP** | **9.4e-3** | **4.3e-3** | **3.5e-3** | 67/68 | 7.9e-3 |
 | MLP + Fourier features | 1.7e-1 | 4.6e-2 | 9.6e-3 | 61/68 | 1.1e-1 |
 | MLP, dissipative pretraining (half the budget lossy) | 3.0e-2 | 1.1e-2 | 9.0e-3 | 62/68 | 1.9e-2 |
-| **hybrid: learned single-barrier S + exact star product** | **4.5e-5** | **1.3e-5** | **4.7e-6** | **68/68** | **2.3e-5** |
+| **hybrid: interpolated single-barrier S + exact star product** | **4.5e-5** | **1.3e-5** | **4.7e-6** | **68/68** | **2.3e-5** |
 | per-configuration AAA at query time, 16 evaluations per configuration | 6.3e-10, 68/68 (OOD 4.0e-9, 35/35) | | | | |
 
 ![Exp4](../results/exp4/figures/exp4_rmse_vs_budget.png)
 
 **Findings.**
-- **The MLP outperforms local and kernel interpolators in 4D.** Resonance ridges E_n(V₀, a, d) are narrow in
+- **The MLP outperforms local and kernel interpolators in the four-parameter problem.** Resonance ridges E_n(V₀, a, d) are narrow in
   E and curved in parameter space, which hurts tensor grids and stationary kernels.
 - **Fourier features did not help.** Validation always selected the smallest σ, and the error grows more
   strongly with distance to the training set (Spearman ρ = 0.71 vs 0.18 for the plain MLP at B = 2,048).
@@ -288,6 +290,11 @@ Median test RMSE(T), median over 3 seeds:
   when more than ~B/16 configurations are needed: more than 128 for the MLP at B = 2,048, and then at
   ~10⁷× lower accuracy.
 - **Spurious peaks** (corrected metric): 0 for the MLP and the hybrid, 0–10 for the tensor spline.
+- **Audit erratum (2026-10).** "Resonances found" counts a resonance when T̂ > 0.5 at one reference point within
+  ±Γ, without checking the line shape. With the strict peak-relative rule of Experiments 5–7 (max |T̂ − T| ≤
+  0.1 T_peak over ±2Γ), recomputed after retraining with the original seeds (RMSE reproduced exactly): MLP 44–53/68
+  at B = 2,048 and 61–62/68 at B = 32,768 (OOD 24–27/35); tensor spline 26/68 (OOD 1/35); hybrid 68/68 (35/35).
+  `results/audit_2026/exp4_strict.json`.
 
 ### 4.6 Experiment 5: independent stress test (27 unseen systems, equal budgets)
 
@@ -383,7 +390,7 @@ call, not a measured run, and it is comparable to the MLP training time.
    systems with noise 10⁻⁴.
 2. **Adaptive sampling** is useful for local interpolants, especially when it is driven by the amplitude rather
    than by T. Its gain is smaller and depends on conventions and system parameters.
-3. **Neural networks** gave no accuracy advantage in 1D. In the 4D parametric problem the plain MLP is the best
+3. **Neural networks** gave no accuracy advantage in 1D. In the four-parameter problem the plain MLP is the best
    *generic* method. Structure-exploiting composition of S-matrices beats it by 2–3 orders of magnitude, and
    so does per-configuration AAA whenever configurations can be computed on demand.
 4. **Stress test.** The AAA conclusion holds on 27 unseen systems, including asymmetric barriers, overlapping

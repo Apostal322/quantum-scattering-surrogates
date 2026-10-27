@@ -1,0 +1,13 @@
+{
+  "name": "robustness",
+  "description": "Experiment F: noise (t data / snapshots), coarse-mesh training data, energy-grid jitter, near-degenerate resonance doublets, single-precision online solve.",
+  "splits_config": "generalization.json",
+  "n_lines": 2, "n_energy_candidates": 2048, "budget": 32,
+  "seeds": [1, 2, 3, 4, 5],
+  "noise_levels": [1e-10, 1e-8, 1e-6, 1e-4, 1e-2],
+  "coarse_meshes": [0.02, 0.01, 0.005],
+  "jitter": [0.1, 0.3, 0.5],
+  "scan": {"n_uniform": 4001, "n_window": 401},
+  "triple": {"s": 0.5, "spacing": 3.0, "outer": 10.0, "middle_heights": [8.0, 12.0, 16.0, 22.0, 30.0],
+             "E_range": [0.1, 8.0], "rel_cut": 1e-14, "budgets": [16, 24, 32, 48]}
+}

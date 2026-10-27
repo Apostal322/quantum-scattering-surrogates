@@ -51,15 +51,15 @@ automatically and deterministically when missing.
 | model | definition | training / fitting | notes |
 |---|---|---|---|
 | Linear / PCHIP / cubic spline | `qscatter/surrogates/baselines.py` (SciPy) | interpolation | cubic: not-a-knot |
-| Gaussian process | scikit-learn, RBF vs Matérn-5/2 chosen by marginal likelihood | length-scale lower bound = ½ mean sample spacing (fixes a degenerate optimum) | 4D: ARD Matérn, exact GP on ≤ 2048 points |
+| Gaussian process | scikit-learn, RBF vs Matérn-5/2 chosen by marginal likelihood | length-scale lower bound = ½ mean sample spacing (fixes a degenerate optimum) | four-parameter problem: ARD Matérn, exact GP on ≤ 2048 points |
 | AAA rational | `qscatter/surrogates/rational.py` (`scipy.interpolate.AAA`, Nakatsukasa et al. 2018) | variable k = √E, target complex t; rtol 1e-13, or 3σ for noisy data | spurious poles filtered by residue |
 | Greedy AAA | `qscatter/experiments/robustness.py`, `stress.py` | next point at argmin of the barycentric denominator; stop after 3 look-ahead errors < 1e-8 | idea from the gMRI code of Pradovera et al.; our adaptation |
 | 1D MLP | `qscatter/surrogates/mlp.py`: 1 → 64 → 64 → 2, SiLU, float64 | Adam, lr 1e-2 with cosine decay to 1e-5, ≤ 20k epochs; interleaved validation, early stopping + refit | config chosen by validation loss (`results/mlp_config_selection.txt`) |
-| 4D MLP | `qscatter/parametric.py`: 4 → 128 → 128 → 128 → 2, SiLU, float32 | Adam, minibatch 1024, 20k steps, best validation checkpoint | validation = held-out configurations |
+| four-parameter MLP | `qscatter/parametric.py`: 4 → 128 → 128 → 128 → 2, SiLU, float32 | Adam, minibatch 1024, 20k steps, best validation checkpoint | validation = held-out configurations |
 | Fourier-feature MLP | same + [sin 2πBx, cos 2πBx], B ~ N(0, σ²) | σ chosen on validation data | Tancik et al. 2020 |
 | POD + MLP | SVD of training scans + MLP for the coefficients | compression error reported separately | — |
 | Dissipative pretraining | pretrain on an absorbing well V = −iW (W = 0.05), fine-tune lossless | half the budget lossy, same geometries | idea from Nam et al.; our 1D transfer |
-| Hybrid S-matrix | learned single-barrier (t_b, r_b)(E, V₀, a) on a tensor grid + exact star-product composition | cubic interpolation | requires the block decomposition |
+| Hybrid S-matrix | single-barrier (t_b, r_b)(E, V₀, a) interpolated on a tensor grid (no neural network) + exact star-product composition | cubic interpolation | requires the block decomposition |
 
 ## Checkpoints
 

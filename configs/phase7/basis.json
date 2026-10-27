@@ -1,0 +1,16 @@
+{
+  "name": "basis",
+  "description": "Experiment D: greedy basis size vs resonance count and width, one geometric knob at a time (fixed-height energy lines).",
+  "base": {"s": 0.6, "d": 4.0, "V0": 10.0, "E_max": 10.0},
+  "sweeps": {
+    "V0": [6.0, 8.0, 10.0, 14.0, 18.0],
+    "d": [2.0, 3.0, 4.0, 6.0, 8.0],
+    "s": [0.3, 0.45, 0.6, 0.9],
+    "E_max": [3.0, 5.0, 10.0, 15.0, 20.0]
+  },
+  "E_min": 0.1, "h": 0.0025, "rel_cut": 1e-14,
+  "n_candidates": 2048, "n_validation": 400, "seed_validation": 301, "n_dense": 2000,
+  "rank_tols": [1e-4, 1e-6, 1e-8, 1e-10],
+  "accuracy_tols": [1e-2, 1e-4, 1e-6, 1e-8],
+  "n_max": 60
+}
